@@ -212,20 +212,5 @@ namespace Tetris.Models
         {
             throw new NotImplementedException();
         }
-
-        private static class Check
-        {
-            public static void CheckFigureGizmo( FigureGizmo figureGizmo, GameField graveyard )
-            {
-                if ( figureGizmo == null ) throw new ArgumentNullException();
-
-                if ( figureGizmo.Left < 0
-                     || figureGizmo.Right > graveyard.Width
-                     || figureGizmo.Top < 0
-                     || figureGizmo.Bottom > graveyard.Height ) {
-                    throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
     }
 }
