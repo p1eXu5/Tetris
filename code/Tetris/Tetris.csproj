@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Contracts\ITetrisEngine.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
     <Compile Include="Models\FigureGizmo.cs" />
     <Compile Include="Models\FigureGizmoBase.cs" />

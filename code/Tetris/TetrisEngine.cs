@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Tetris.Contracts;
 using Tetris.Models;
 using Tetris.Models.Contracts;
 
 namespace Tetris
 {
-    public class TetrisEngine : IDisposable
+    public class TetrisEngine : ITetrisEngine, IDisposable
     {
         private const int MAX_SPEED = 600;
         private const int MIN_SPEED = 100;
@@ -106,5 +107,8 @@ namespace Tetris
         {
             throw new NotImplementedException();
         }
+
+        public Color?[][] GetGameField() => _gameField.GetField();
+        
     }
 }
