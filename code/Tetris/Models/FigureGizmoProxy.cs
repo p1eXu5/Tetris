@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Tetris.Models.Contracts;
 
 namespace Tetris.Models
 {
     public class FigureGizmoProxy : FigureGizmoBase, IFigureGizmoProxy
     {
-
         public FigureGizmoProxy( ILiveFigureGizmo image )
         {
             Image = image ?? throw new ArgumentNullException();

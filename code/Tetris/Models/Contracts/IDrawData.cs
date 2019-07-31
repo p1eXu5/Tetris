@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace Tetris.Models
+namespace Tetris.Models.Contracts
 {
     public interface IDrawData
     {

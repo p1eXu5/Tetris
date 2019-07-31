@@ -60,12 +60,12 @@
     <Compile Include="Models\FigureGizmoBase.cs" />
     <Compile Include="Models\GameField.cs" />
     <Compile Include="Models\FigureGizmoProxy.cs" />
-    <Compile Include="Models\IDrawData.cs" />
-    <Compile Include="Models\IFigureFlyweightFactory.cs" />
-    <Compile Include="Models\IFigureGizmo.cs" />
-    <Compile Include="Models\IFigureGizmoProxy.cs" />
-    <Compile Include="Models\IGameField.cs" />
-    <Compile Include="Models\ILiveFigureGizmo.cs" />
+    <Compile Include="Models\Contracts\IDrawData.cs" />
+    <Compile Include="Models\Contracts\IFigureFlyweightFactory.cs" />
+    <Compile Include="Models\Contracts\IFigureGizmo.cs" />
+    <Compile Include="Models\Contracts\IFigureGizmoProxy.cs" />
+    <Compile Include="Models\Contracts\IGameField.cs" />
+    <Compile Include="Models\Contracts\ILiveFigureGizmo.cs" />
     <Compile Include="Models\RotateDirections.cs" />
     <Compile Include="TetrisEngine.cs" />
     <Page Include="MainWindow.xaml">
@@ -83,10 +83,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Angle.cs" />
     <Compile Include="Models\Figure.cs" />
     <Compile Include="Models\FigureFlyweightFactory.cs" />
-    <Compile Include="Models\IFigure.cs" />
+    <Compile Include="Models\Contracts\IFigure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using NUnit.Framework;
 using Tetris.Models;
 using System.Windows.Media;
@@ -19,8 +14,7 @@ namespace Tetris.Tests.UnitTests.TestCases
             #region Line-Figure
 
             var figure0 = new FigureGizmo(FigureFlyweightFactory.LineFigure);
-            var res0 = new Color?[][]
-            {
+            var res0 = new[] {
                 new Color?[] { null, figure0.Color, figure0.Color, figure0.Color, figure0.Color, null },
                 new Color?[] { null, null, null, null, null, null },
                 new Color?[] { null, null, null, null, null, null },
@@ -32,8 +26,7 @@ namespace Tetris.Tests.UnitTests.TestCases
 
 
             var figure1 = new FigureGizmo(FigureFlyweightFactory.LineFigure);
-            var res1 = new Color?[][]
-            {
+            var res1 = new[] {
                 new Color?[] { null, figure1.Color, figure1.Color, figure1.Color, figure1.Color, null, null },
                 new Color?[] { null, null, null, null, null, null, null },
                 new Color?[] { null, null, null, null, null, null, null },
@@ -47,8 +40,7 @@ namespace Tetris.Tests.UnitTests.TestCases
             var figure2 = new FigureGizmo(FigureFlyweightFactory.LineFigure);
             figure2.ClockwiseRotate();
 
-            var res2 = new Color?[][]
-            {
+            var res2 = new[] {
                 new Color?[] { null, figure2.Color, null },
                 new Color?[] { null, figure2.Color, null },
                 new Color?[] { null, figure2.Color, null },
@@ -65,8 +57,7 @@ namespace Tetris.Tests.UnitTests.TestCases
             var figure3 = new FigureGizmo(FigureFlyweightFactory.LineFigure);
             figure3.ClockwiseRotate();
 
-            var res3 = new Color?[][]
-            {
+            var res3 = new[] {
                 new Color?[] { null, figure3.Color, null, null },
                 new Color?[] { null, figure3.Color, null, null },
                 new Color?[] { null, figure3.Color, null, null },
@@ -86,8 +77,7 @@ namespace Tetris.Tests.UnitTests.TestCases
 
             var figure4 = new FigureGizmo( FigureFlyweightFactory.LFigure );
 
-            var res4 = new Color?[][]
-            {
+            var res4 = new[] {
                 new Color?[] { null, figure4.Color, figure4.Color, figure4.Color, null },
                 new Color?[] { null, figure4.Color, null, null, null },
                 new Color?[] { null, null, null, null, null },
@@ -100,8 +90,7 @@ namespace Tetris.Tests.UnitTests.TestCases
 
             var figure5 = new FigureGizmo(FigureFlyweightFactory.LFigure);
             
-            var res5 = new Color?[][]
-            {
+            var res5 = new[] {
                 new Color?[] { null, figure5.Color, figure5.Color, figure5.Color, null, null },
                 new Color?[] { null, figure5.Color, null, null, null, null },
                 new Color?[] { null, null, null, null, null, null },
@@ -115,8 +104,7 @@ namespace Tetris.Tests.UnitTests.TestCases
             var figure6 = new FigureGizmo(FigureFlyweightFactory.LFigure);
             figure6.CounterclockwiseRotate();
 
-            var res6 = new Color?[][]
-            {
+            var res6 = new[] {
                 new Color?[] { null, figure6.Color, null, null },
                 new Color?[] { null, figure6.Color, null, null },
                 new Color?[] { null, figure6.Color, figure6.Color, null },
@@ -131,8 +119,7 @@ namespace Tetris.Tests.UnitTests.TestCases
             var figure7 = new FigureGizmo(FigureFlyweightFactory.LFigure);
             figure7.CounterclockwiseRotate();
 
-            var res7 = new Color?[][]
-            {
+            var res7 = new[] {
                 new Color?[] { null, figure7.Color, null, null, null },
                 new Color?[] { null, figure7.Color, null, null, null },
                 new Color?[] { null, figure7.Color, figure7.Color, null, null },

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tetris.Models
+namespace Tetris.Models.Contracts
 {
     public interface IFigureGizmoProxy: IFigureGizmo, ILiveFigureGizmo
     {

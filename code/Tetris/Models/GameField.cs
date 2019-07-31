@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Tetris.Helpers;
+using Tetris.Models.Contracts;
 
 namespace Tetris.Models
 {

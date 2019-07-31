@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using Moq;
 using NUnit.Framework;
 using Tetris.Models;
+using Tetris.Models.Contracts;
 using Tetris.Tests.UnitTests.TestCases;
 
 // ReSharper disable ObjectCreationAsStatement
@@ -21,25 +18,25 @@ namespace Tetris.Tests.UnitTests
         [Test]
         public void Ctor_ZeroWidth_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>( new TestDelegate( () => new GameField( 0, 1 ) ) );
+            Assert.Throws<ArgumentException>( () => new GameField( 0, 1 ) );
         }
 
         [Test]
         public void Ctor_NegativeWidth_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(new TestDelegate(() => new GameField(-1, 1)));
+            Assert.Throws<ArgumentException>(() => new GameField(-1, 1));
         }
 
         [Test]
         public void Ctor_ZeroHeight_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(new TestDelegate(() => new GameField(1, -1)));
+            Assert.Throws<ArgumentException>(() => new GameField(1, -1));
         }
 
         [Test]
         public void Ctor_NegativeHeight_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(new TestDelegate(() => new GameField(1, -1)));
+            Assert.Throws<ArgumentException>(() => new GameField(1, -1));
         }
 
         #endregion
@@ -51,7 +48,7 @@ namespace Tetris.Tests.UnitTests
         public void GetField_ByDefault_ReturnsNullableArray()
         {
             var gamefield = GetGameField( 1, 1 );
-            var expected = new Color?[][] { new Color?[] { null } } ;
+            var expected = new[] { new Color?[] { null } } ;
 
             Assert.That( gamefield.GetField(), Is.EquivalentTo( expected ) );
         }
@@ -67,7 +64,7 @@ namespace Tetris.Tests.UnitTests
             var gameField = GetGameField( 1, 1 );
             var figureGizmo = GetMockedMeasureFigureGizmo( 2, 1 );
 
-            Assert.Throws< ArgumentException >( new TestDelegate( () => gameField.TryAddFigure( figureGizmo ) ) );
+            Assert.Throws< ArgumentException >( () => gameField.TryAddFigure( figureGizmo ) );
         }
 
         [Test]
@@ -76,7 +73,7 @@ namespace Tetris.Tests.UnitTests
             var gameField = GetGameField(1, 1);
             var figureGizmo = GetMockedMeasureFigureGizmo(1, 2);
 
-            Assert.Throws<ArgumentException>(new TestDelegate(() => gameField.TryAddFigure(figureGizmo)));
+            Assert.Throws<ArgumentException>(() => gameField.TryAddFigure(figureGizmo));
         }
 
         [ TestCaseSource( typeof(TryAddFigureTestCases), nameof( TryAddFigureTestCases.DefaultPlacing )) ]

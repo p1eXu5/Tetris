@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using NUnit.Framework;
 using Tetris.Models;
+using Tetris.Models.Contracts;
 
 namespace Tetris.Tests.UnitTests
 {
@@ -98,6 +94,7 @@ namespace Tetris.Tests.UnitTests
 
         #endregion
 
+
         #region Height
 
         [Test]
@@ -184,6 +181,7 @@ namespace Tetris.Tests.UnitTests
 
         #endregion
 
+
         #region Indexer
 
         [Test]
@@ -191,9 +189,9 @@ namespace Tetris.Tests.UnitTests
         {
             var figureGizmo = GetFigureGizmo();
 
-            Assert.That( figureGizmo[0,0], Is.EqualTo((Color?)null) );
+            Assert.That( figureGizmo[0,0], Is.EqualTo(null) );
             Assert.That( figureGizmo[0,1], Is.EqualTo(figureGizmo.Color) );
-            Assert.That( figureGizmo[0,2], Is.EqualTo((Color?)null) );
+            Assert.That( figureGizmo[0,2], Is.EqualTo(null) );
 
             Assert.That( figureGizmo[1,0], Is.EqualTo(figureGizmo.Color) );
             Assert.That( figureGizmo[1,1], Is.EqualTo(figureGizmo.Color) );
@@ -206,13 +204,13 @@ namespace Tetris.Tests.UnitTests
             var figureGizmo = GetFigureGizmo();
             figureGizmo.CounterclockwiseRotate();
 
-            Assert.That(figureGizmo[0, 0], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[0, 0], Is.EqualTo(null));
             Assert.That(figureGizmo[0, 1], Is.EqualTo(figureGizmo.Color));
 
             Assert.That(figureGizmo[1, 0], Is.EqualTo(figureGizmo.Color));
             Assert.That(figureGizmo[1, 1], Is.EqualTo(figureGizmo.Color));
 
-            Assert.That(figureGizmo[2, 0], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[2, 0], Is.EqualTo(null));
             Assert.That(figureGizmo[2, 1], Is.EqualTo(figureGizmo.Color));
         }
 
@@ -223,13 +221,13 @@ namespace Tetris.Tests.UnitTests
             figureGizmo.ClockwiseRotate();
 
             Assert.That(figureGizmo[0, 0], Is.EqualTo(figureGizmo.Color));
-            Assert.That(figureGizmo[0, 1], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[0, 1], Is.EqualTo(null));
 
             Assert.That(figureGizmo[1, 0], Is.EqualTo(figureGizmo.Color));
             Assert.That(figureGizmo[1, 1], Is.EqualTo(figureGizmo.Color));
 
             Assert.That(figureGizmo[2, 0], Is.EqualTo(figureGizmo.Color));
-            Assert.That(figureGizmo[2, 1], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[2, 1], Is.EqualTo(null));
         }
 
         [Test]
@@ -243,13 +241,14 @@ namespace Tetris.Tests.UnitTests
             Assert.That(figureGizmo[0, 1], Is.EqualTo(figureGizmo.Color));
             Assert.That(figureGizmo[0, 2], Is.EqualTo(figureGizmo.Color));
 
-            Assert.That(figureGizmo[1, 0], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[1, 0], Is.EqualTo(null));
             Assert.That(figureGizmo[1, 1], Is.EqualTo(figureGizmo.Color));
-            Assert.That(figureGizmo[1, 2], Is.EqualTo((Color?)null));
+            Assert.That(figureGizmo[1, 2], Is.EqualTo(null));
 
         }
 
         #endregion
+
 
         #region IsEmptyGizmo
 
@@ -260,6 +259,7 @@ namespace Tetris.Tests.UnitTests
         }
 
         #endregion
+
 
         #region Factory
 

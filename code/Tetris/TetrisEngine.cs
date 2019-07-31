@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Tetris.Models;
+using Tetris.Models.Contracts;
 
 namespace Tetris
 {

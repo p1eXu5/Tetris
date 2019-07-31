@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Tetris.Models {
+namespace Tetris.Models.Contracts
+{
     public interface IFigureFlyweightFactory : IDisposable
     {
         ILiveFigureGizmo GetNext();

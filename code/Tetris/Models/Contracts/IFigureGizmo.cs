@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Tetris.Models {
+namespace Tetris.Models.Contracts
+{
     public interface IFigureGizmo {
         IFigure Figure { get; }
         Point Center { get; }
