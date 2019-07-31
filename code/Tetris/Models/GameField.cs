@@ -147,7 +147,7 @@ namespace Tetris.Models
             }
 
             if ( _activeFigureGizmo.IsEmptyGizmo ) {
-                throw new InvalidOperationException("Figure is Empty");
+                return false;
             }
 
             if ( vector.Y > 0 ) 

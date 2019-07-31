@@ -136,10 +136,10 @@ namespace Tetris.Tests.UnitTests
         #region TryMove
 
         [ Test ]
-        public void TryMove__EmptyFigureGizmo_DownVector__Throws()
+        public void TryMove__EmptyFigureGizmo_DownVector__ReturnsFalse()
         {
             var gameField = GetGameField( 1, 1 );
-            Assert.Throws< InvalidOperationException >( () => gameField.TryMove( new Vector(0, 1.0) ) );
+            Assert.False( gameField.TryMove( new Vector(0, 1.0) ) );
         }
 
         [Test]
