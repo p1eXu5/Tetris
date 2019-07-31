@@ -51,7 +51,7 @@ namespace Tetris.Tests.UnitTests
         public void GetField_ByDefault_ReturnsNullableArray()
         {
             var gamefield = GetGameField( 1, 1 );
-            var expected = new Color?[,] { { null } } ;
+            var expected = new Color?[][] { new Color?[] { null } } ;
 
             Assert.That( gamefield.GetField(), Is.EquivalentTo( expected ) );
         }
@@ -80,7 +80,7 @@ namespace Tetris.Tests.UnitTests
         }
 
         [ TestCaseSource( typeof(TryAddFigureTestCases), nameof( TryAddFigureTestCases.DefaultPlacing )) ]
-        public Color?[,] TryAddFigure_ByDefault_AddFigureToTheCenterTop( int width, int height, ILiveFigureGizmo figureGizmo )
+        public Color?[][] TryAddFigure_ByDefault_AddFigureToTheCenterTop( int width, int height, ILiveFigureGizmo figureGizmo )
         {
             var gameField = GetGameField( width, height );
             var canAdd = gameField.TryAddFigure( figureGizmo );
@@ -105,7 +105,7 @@ namespace Tetris.Tests.UnitTests
         }
 
         [ Test ]
-        public void Merge_NotEmptyFigure_MergeFigureResetsFigureToEmptyFigure()
+        public void Merge_NotEmptyFigure_MergeFigureAndResetsFigureToEmptyFigure()
         {
             var gameField = GetGameField( 3, 3 );
             gameField.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.JFigure ) );
@@ -115,9 +115,9 @@ namespace Tetris.Tests.UnitTests
             bool hasFilledCells = false;
             var field = gameField.GetField();
 
-            for ( int i = 0; i < field.GetLength( 0 ); i++ ) {
-                for ( int j = 0; j < field.GetLength( 1 ); j++ ) {
-                    if ( field[ i, j ] != null ) {
+            foreach ( var t in field ) {
+                foreach ( var t1 in t ) {
+                    if ( t1 != null ) {
                         hasFilledCells = true;
                         goto next;
                     }
@@ -241,6 +241,7 @@ namespace Tetris.Tests.UnitTests
             gamefield.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.TiFigure ) );
             gamefield.TryMove( new Vector( 0, 1.0 ) );
             gamefield.TryMove( new Vector( 0, 1.0 ) );
+            gamefield.Merge();
 
             return gamefield;
         }

@@ -21,7 +21,7 @@ namespace Tetris.Models
         void Merge();
         bool TryMove( Vector vector );
         bool TryRotateFigure( RotateDirections direction );
-        Color?[,] GetField();
+        Color?[][] GetField();
         int[] RemoveFullLines();
     }
 }
