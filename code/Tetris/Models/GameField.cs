@@ -208,18 +208,6 @@ namespace Tetris.Models
             return true;
         }
 
-        private bool CanPlace( FigureGizmo figureGizmo, Vector vector = new Vector() )
-        {
-
-            for ( int i = ( int )figureGizmo.Top; i < ( int )figureGizmo.Top + figureGizmo.Height; i++ ) {
-                for ( int j = ( int )figureGizmo.Left; j < ( int )figureGizmo.Left + figureGizmo.Width; j++ ) {
-                    if ( _field[ i, j ] != Colors.Transparent ) return false;
-                }
-            }
-
-            return true;
-        }
-
         public int[] RemoveFullLines()
         {
             throw new NotImplementedException();
