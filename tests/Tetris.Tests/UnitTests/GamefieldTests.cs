@@ -217,6 +217,62 @@ namespace Tetris.Tests.UnitTests
         #endregion
 
 
+        #region RemoveFilledLines
+
+        [ Test ]
+        public void RemoveFilledLines_ByDefault_ReturnsEmptyArray()
+        {
+            var gameField = GetGameField( 1, 1 );
+            var expected = new int[0];
+
+            Assert.That( gameField.RemoveFilledLines(), Is.EqualTo( expected ) );
+        }
+
+        [ Test ]
+        public void RemoveFilledLines_FieldHasFilledLines_ReturnsFilledLinesNumbers()
+        {
+            var gamefield = GetGameField( 3, 4 );
+
+            gamefield.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.TiFigure ) );
+            gamefield.TryMove( new Vector( 0.0, 1.0 ) );
+            gamefield.TryMove( new Vector( 0.0, 1.0 ) );
+            gamefield.Merge();
+
+            var figure = new FigureGizmo( FigureFlyweightFactory.TiFigure );
+            figure.ClockwiseRotate();
+            figure.ClockwiseRotate();
+            gamefield.TryAddFigure( figure );
+            gamefield.Merge();
+
+            var expected = new[] { 0, 3 };
+
+            Assert.That( gamefield.RemoveFilledLines(), Is.EquivalentTo( expected ) );
+        }
+
+        [Test]
+        public void RemoveFilledLines_FieldHasNoFilledLines_ReturnsEmptyArray()
+        {
+            var gamefield = GetGameField(4, 4);
+
+            gamefield.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.TiFigure));
+            gamefield.TryMove(new Vector(0.0, 1.0));
+            gamefield.TryMove(new Vector(0.0, 1.0));
+            gamefield.Merge();
+
+            var figure = new FigureGizmo(FigureFlyweightFactory.TiFigure);
+            figure.ClockwiseRotate();
+            figure.ClockwiseRotate();
+            gamefield.TryAddFigure(figure);
+            gamefield.Merge();
+
+            var expected = new int[0];
+
+            Assert.That(gamefield.RemoveFilledLines(), Is.EquivalentTo(expected));
+        }
+
+        #endregion
+
+
         #region Factory
 
         private IGameField GetGameField( int width, int height )

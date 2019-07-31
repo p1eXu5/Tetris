@@ -48,7 +48,7 @@ namespace Tetris
 
             _gameField.Merge();
 
-            var removedLines = _gameField.RemoveFullLines();
+            var removedLines = _gameField.RemoveFilledLines();
             if ( removedLines.Any() ) { 
 
             }

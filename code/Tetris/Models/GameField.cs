@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Tetris.Helpers;
@@ -124,7 +125,7 @@ namespace Tetris.Models
 
             if ( vector.Y > 0 ) 
             { 
-                if (ActiveFigureGizmo.Bottom + vector.Y >= Height ) return false;
+                if (ActiveFigureGizmo.Bottom + vector.Y > Height ) return false;
 
                 for ( int j = ActiveFigureGizmo.Left, jj = 0; j < ActiveFigureGizmo.Right; ++j, ++jj ) 
                 {
@@ -148,7 +149,7 @@ namespace Tetris.Models
             }
             else if ( vector.X > 0 ) 
             {
-                if (ActiveFigureGizmo.Right + vector.X >= Width ) return false;
+                if (ActiveFigureGizmo.Right + vector.X > Width ) return false;
 
                 for (int i = ActiveFigureGizmo.Top, ii = 0; i < ActiveFigureGizmo.Bottom; ++i, ++ii)
                 {
@@ -175,18 +176,23 @@ namespace Tetris.Models
 
             return true;
         }
-
-
-
-
-
-
-
-
-
-        public int[] RemoveFullLines()
+        public int[] RemoveFilledLines()
         {
-            throw new NotImplementedException();
+            var res = new List< int >( Height );
+
+            for ( int i = 0; i < _field.Count; i++ ) {
+                if ( _field[ i ].All( col => col.HasValue ) ) {
+                    res.Add( i );
+                }
+            }
+
+            foreach ( var lineNum in res ) {
+                for ( var i = 0; i < _field[lineNum].Length; ++i ) {
+                    _field[lineNum][i] = null;
+                }
+            }
+
+            return res.ToArray();
         }
     }
 }
