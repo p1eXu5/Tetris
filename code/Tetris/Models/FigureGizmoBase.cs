@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ using Tetris.Models.Contracts;
 
 namespace Tetris.Models
 {
-    public abstract class FigureGizmoBase : ILiveFigureGizmo, IFigureGizmo
+    public abstract class FigureGizmoBase : ILiveFigureGizmo, IFigureGizmo, IEnumerable< Color?[] >
     {
         protected int _angle;
 
@@ -20,6 +21,16 @@ namespace Tetris.Models
         public abstract Color Color { get; }
 
         public abstract int Angle { get; }
+
+        public void Rotate( RotateDirections direction )
+        {
+            if ( direction == RotateDirections.Clockwise ) {
+                ClockwiseRotate();
+            }
+            else {
+                CounterclockwiseRotate();
+            }
+        }
 
         public void CounterclockwiseRotate()
         {
@@ -97,6 +108,16 @@ namespace Tetris.Models
         public void MoveTo(Point point)
         {
             Center = point;
+        }
+
+        public IEnumerator< Color?[] > GetEnumerator()
+        {
+           return new FigureGizmoEnumerator( this );
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

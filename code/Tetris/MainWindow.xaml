@@ -4,9 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tetris"
+        xmlns:components="clr-namespace:Tetris.Components"
+
+        d:DataContext="{d:DesignInstance local:MainViewModel}"
+
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="646.539" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Viewbox>
+            <components:TetrisCanvas x:Name="m_canvas" Width="20" Height="20" />
+        </Viewbox>
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="{Binding ElementName=m_canvas, Path=ActualWidth}"></TextBlock>
+            <TextBlock Text="{Binding ElementName=m_canvas, Path=Width}"></TextBlock>
+            <TextBlock Text="{Binding ElementName=m_canvas, Path=ActualHeight}"></TextBlock>
+            <TextBlock Text="{Binding ElementName=m_canvas, Path=Height}"></TextBlock>
+        </StackPanel>
     </Grid>
 </Window>

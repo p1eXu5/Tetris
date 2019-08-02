@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Tetris.Models.Contracts
 {
-    public interface IFigureGizmo {
+    public interface IFigureGizmo : IEnumerable< Color?[] >
+    {
         IFigure Figure { get; }
         Point Center { get; }
 
