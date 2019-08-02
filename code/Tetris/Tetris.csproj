@@ -81,7 +81,6 @@
     </ApplicationDefinition>
     <Compile Include="Components\TetrisCanvas.cs" />
     <Compile Include="Contracts\ITetrisEngine.cs" />
-    <Compile Include="FakeTetrisEngine.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
     <Compile Include="Models\FigureGizmo.cs" />
     <Compile Include="Models\FigureGizmoBase.cs" />

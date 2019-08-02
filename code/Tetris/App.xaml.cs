@@ -30,7 +30,7 @@ namespace Tetris
         private void SetupServices()
         {
             _container.RegisterType< IFigureFlyweightFactory, FigureFlyweightFactory >();
-            _container.RegisterType< ITetrisEngine, FakeTetrisEngine >();
+            _container.RegisterType< ITetrisEngine, TetrisEngine >();
             _container.RegisterType< MainViewModel >();
         }
     }

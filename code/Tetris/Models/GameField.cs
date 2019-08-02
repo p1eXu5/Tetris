@@ -12,9 +12,16 @@ namespace Tetris.Models
 {
     public class GameField : IGameField
     {
+        #region Fields
+
         private readonly List<Color?[]> _field;
         private readonly IFigureGizmoProxy _activeFigureGizmoProxy;
-        private readonly ObservableCollection<(Color?[][] data, int left, int top)> _gameObjectCollection;
+        private int _fieldTop;
+
+        #endregion
+
+
+        #region Ctor
 
         public GameField(int width, int height)
         {
@@ -23,36 +30,33 @@ namespace Tetris.Models
 
             _field = new List<Color?[]>(height);
             height.ForEach(() => _field.Add(new Color?[width]));
+            _fieldTop = _field.Count;
 
             _activeFigureGizmoProxy = new FigureGizmoProxy(FigureGizmo.EmptyGizmo);
-
-            _gameObjectCollection = new ObservableCollection<(Color?[][] data, int left, int top)>();
-            _gameObjectCollection.Add((_field.ToArray(), 0, 0));
-            _gameObjectCollection.Add((ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top));
-
-            GameObjectCollection = new ReadOnlyObservableCollection<(Color?[][] data, int left, int top)>(_gameObjectCollection);
         }
+
+        #endregion
+
+
+        #region Properties
 
         public int Width { get; }
         public int Height { get; }
-
         public IFigureGizmo ActiveFigureGizmo => _activeFigureGizmoProxy.Image;
 
-        public ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
+        #endregion
 
-        public event EventHandler< int[] > LinesRemoving; 
+
+        #region Public Methods
 
         public void Clear()
         {
-            foreach (var t in _field)
+            for (var i = 0; i < Height; ++i)
             {
-                for (int j = 0; j < t.Length; j++)
-                {
-                    t[j] = (Color?)null;
-                }
+                _field[i] = new Color?[Width];
             }
 
-            _gameObjectCollection[0] = (_field.ToArray(), 0, 0);
+            _fieldTop = _field.Count;
             ResetActiveFigureGizmo();
         }
 
@@ -68,10 +72,10 @@ namespace Tetris.Models
             if (IsOverlay(figureGizmo)) return false;
 
             _activeFigureGizmoProxy.Image = figureGizmo;
-            _gameObjectCollection[1] = (ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top);
 
             return true;
         }
+
         public void Merge()
         {
             if (ActiveFigureGizmo.IsEmptyGizmo)
@@ -81,14 +85,14 @@ namespace Tetris.Models
 
             for (int i = ActiveFigureGizmo.Top, ii = 0; i < ActiveFigureGizmo.Bottom; i++, ii++)
             {
-
                 for (int j = ActiveFigureGizmo.Left, jj = 0; j < ActiveFigureGizmo.Right; j++, jj++)
                 {
                     _field[i][j] = ActiveFigureGizmo[ii, jj];
                 }
             }
 
-            _gameObjectCollection[0] = (_field.ToArray(), 0, 0);
+            if ( _fieldTop > ActiveFigureGizmo.Top ) _fieldTop = ActiveFigureGizmo.Top;
+
             ResetActiveFigureGizmo();
         }
 
@@ -99,7 +103,6 @@ namespace Tetris.Models
             if (IsOverlay(_activeFigureGizmoProxy))
             {
                 _activeFigureGizmoProxy.Image.Rotate(direction);
-                _gameObjectCollection[1] = (ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top);
                 return true;
             }
 
@@ -168,10 +171,10 @@ namespace Tetris.Models
             }
 
             _activeFigureGizmoProxy.Center = Point.Add(_activeFigureGizmoProxy.Center, vector);
-            _gameObjectCollection[1] = (ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top);
 
             return true;
         }
+
         public int[] RemoveFilledLines()
         {
             var res = new List<int>(Height);
@@ -196,11 +199,17 @@ namespace Tetris.Models
                 _field[i] = new Color?[Width];
             }
 
-            LinesRemoving?.Invoke( this, res.ToArray() );
-
-            _gameObjectCollection[ 0 ] = (_field.ToArray(), 0, 0);
-
             return res.ToArray();
+        }
+
+        public (Color?[][] data, int left, int top) GetFigureStack()
+        {
+            return (_field.Skip( _fieldTop ).ToArray(), 0, 0);
+        }
+
+        public (Color?[][] data, int left, int top) GetActiveFigure()
+        {
+            return (ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top);
         }
 
         public Color?[][] GetField()
@@ -226,10 +235,12 @@ namespace Tetris.Models
 
         }
 
+        #endregion
+
+
         private void ResetActiveFigureGizmo()
         {
             _activeFigureGizmoProxy.Image = FigureGizmo.EmptyGizmo;
-            _gameObjectCollection[1] = (ActiveFigureGizmo.ToArray(), ActiveFigureGizmo.Left, ActiveFigureGizmo.Top);
         }
 
         private bool IsOverlay(IFigureGizmo figureGizmo)

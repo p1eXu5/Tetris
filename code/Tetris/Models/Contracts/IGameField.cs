@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,5 +24,9 @@ namespace Tetris.Models.Contracts
         bool TryRotateFigure( RotateDirections direction );
         Color?[][] GetField();
         int[] RemoveFilledLines();
+
+        (Color?[][] data, int left, int top) GetFigureStack();
+        (Color?[][] data, int left, int top) GetActiveFigure();
+
     }
 }

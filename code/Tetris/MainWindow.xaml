@@ -16,7 +16,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Viewbox>
-            <components:TetrisCanvas x:Name="m_canvas" Width="20" Height="20" />
+            <components:TetrisCanvas x:Name="m_canvas" Width="{Binding Width}" Height="{Binding Height}" />
         </Viewbox>
         <StackPanel Grid.Row="1">
             <TextBlock Text="{Binding ElementName=m_canvas, Path=ActualWidth}"></TextBlock>

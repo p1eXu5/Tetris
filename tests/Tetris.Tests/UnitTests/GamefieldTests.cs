@@ -270,6 +270,49 @@ namespace Tetris.Tests.UnitTests
         #endregion
 
 
+        #region GetFigureStack
+
+        [ Test ]
+        public void GetFigureStack_FieldIsEmpty_ReturnsEmptyArray()
+        {
+            var gameField = GetGameField( 1, 1 );
+            Assert.That( gameField.GetFigureStack().data, Is.Empty );
+        }
+
+        [Test]
+        public void GetFigureStack_FieldIsFull_ReturnsFullHeightArray()
+        {
+            var gameField = GetGameField(3, 2);
+            gameField.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.TiFigure ) );
+            gameField.Merge();
+
+            Assert.That(gameField.GetFigureStack().data.Length, Is.EqualTo( 2 ));
+        }
+
+        #endregion
+
+
+        #region GetActiveFigure
+
+        [ Test ]
+        public void GetActiveFigure_FigureIsEmpty_ReturnsEmptyArray()
+        {
+            var gameField = GetGameField( 1, 1 );
+            Assert.That( gameField.GetActiveFigure().data, Is.Empty );
+        }
+
+        [Test]
+        public void GetActiveFigure_FigureIsNotEmpty_ReturnsFilledArray()
+        {
+            var gameField = GetGameField(3, 2);
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.TiFigure));
+
+            Assert.That(gameField.GetActiveFigure().data, Is.Not.Empty);
+        }
+
+        #endregion
+
+
         #region Factory
 
         private IGameField GetGameField( int width, int height )
