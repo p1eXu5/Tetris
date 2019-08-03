@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Agbm.Wpf.MvvmBaseLibrary;
 using Tetris.Contracts;
 using Tetris.Models;
 using Tetris.Models.Contracts;
@@ -19,17 +20,20 @@ namespace Tetris
     {
         private readonly IUnityContainer _container = new UnityContainer();
 
-        protected override void OnStartup( StartupEventArgs e )
+        protected override async void OnStartup( StartupEventArgs e )
         {
             SetupServices();
 
             var wnd = new MainWindow { DataContext = _container.Resolve< MainViewModel >() };
             wnd.Show();
+
+            await ((MvvmAsyncCommand)(( MainViewModel )wnd.DataContext).StartGameCommand).ExecuteAsync();
         }
 
         private void SetupServices()
         {
             _container.RegisterType< IFigureFlyweightFactory, FigureFlyweightFactory >();
+            _container.RegisterType< IGameField, GameField >();
             _container.RegisterType< ITetrisEngine, TetrisEngine >();
             _container.RegisterType< MainViewModel >();
         }

@@ -17,8 +17,8 @@ namespace Tetris
 {
     public class TetrisEngine : ITetrisEngine, IDisposable
     {
-        private const int MAX_SPEED = 600;
-        private const int MIN_SPEED = 100;
+        private const int MIN_SPEED = 600;
+        private const int MAN_SPEED = 100;
         private const int SPEED_STEP = 50;
 
         private readonly IFigureFlyweightFactory _factory;
@@ -30,13 +30,13 @@ namespace Tetris
         private int _timerInvoked;
         private readonly ObservableCollection<(Color?[][] data, int left, int top)> _gameObjectCollection;
 
-        public TetrisEngine( IFigureFlyweightFactory factory, IGameField graveyard, int speed = MAX_SPEED )
+        public TetrisEngine( IFigureFlyweightFactory factory, IGameField graveyard, int speed = MIN_SPEED )
         {
             _factory = factory ?? throw new ArgumentNullException();
             _gameField = graveyard ?? throw new ArgumentNullException();
 
             _timer = new Timer( OnTimer );
-            _speed = speed < MIN_SPEED ? MIN_SPEED : speed > MAX_SPEED ? MAX_SPEED : speed;
+            _speed = speed < MAN_SPEED ? MAN_SPEED : speed > MIN_SPEED ? MIN_SPEED : speed;
 
             _gameObjectCollection = new ObservableCollection< (Color?[][] data, int left, int top) >();
             GameObjectCollection = new ReadOnlyObservableCollection< (Color?[][] data, int left, int top) >( _gameObjectCollection );
@@ -44,7 +44,12 @@ namespace Tetris
             _gameObjectCollection.Add( _gameField.GetFigureStack() );
             _gameObjectCollection.Add( _gameField.GetActiveFigure() );
 
-            TaskScheduler = TaskScheduler.Default;
+            try {
+                TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            }
+            catch ( InvalidOperationException ) {
+                TaskScheduler = TaskScheduler.Default;
+            }
         }
 
         public event EventHandler< int[] > RemovableLinesFormed;
@@ -133,13 +138,13 @@ namespace Tetris
 
         public void SpeedDown()
         {
-            if ( _speed - MIN_SPEED < SPEED_STEP ) return;
+            if ( _speed - MAN_SPEED < SPEED_STEP ) return;
             _speed -= SPEED_STEP;
         }
 
         public void SpeedUp()
         {
-            if (MAX_SPEED - _speed < SPEED_STEP) return;
+            if (MIN_SPEED - _speed < SPEED_STEP) return;
             _speed += SPEED_STEP;
         }
         public void MoveFigureLeft()

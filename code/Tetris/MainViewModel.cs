@@ -14,7 +14,6 @@ namespace Tetris
 {
     public class MainViewModel : ViewModel
     {
-        private const int _fieldScale = 100;
         private readonly ITetrisEngine _tetrisEngine;
         private int[] _removableLines;
 
@@ -26,8 +25,8 @@ namespace Tetris
             };
         }
 
-        public int Width => _tetrisEngine.GameFieldWidth * _fieldScale;
-        public int Height => _tetrisEngine.GameFieldHeight * _fieldScale;
+        public int Width => _tetrisEngine.GameFieldWidth;
+        public int Height => _tetrisEngine.GameFieldHeight;
         public ReadOnlyObservableCollection< (Color?[][], int, int ) > GameObjectCollection => _tetrisEngine.GameObjectCollection;
 
         public int[] RemovableLines

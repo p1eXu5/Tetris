@@ -7,16 +7,16 @@
         xmlns:components="clr-namespace:Tetris.Components"
 
         d:DataContext="{d:DesignInstance local:MainViewModel}"
-
+      
         mc:Ignorable="d"
-        Title="MainWindow" Height="646.539" Width="800">
+        Title="MainWindow" Height="700" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Viewbox>
-            <components:TetrisCanvas x:Name="m_canvas" Width="{Binding Width}" Height="{Binding Height}" />
+        <Viewbox RenderOptions.EdgeMode="Unspecified" UseLayoutRounding="True" SnapsToDevicePixels="True">
+            <components:TetrisCanvas x:Name="m_canvas" Width="{Binding Width}" Height="{Binding Height}" GameObjectsSource="{Binding GameObjectCollection}"  />
         </Viewbox>
         <StackPanel Grid.Row="1">
             <TextBlock Text="{Binding ElementName=m_canvas, Path=ActualWidth}"></TextBlock>

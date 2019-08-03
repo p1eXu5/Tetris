@@ -23,7 +23,7 @@ namespace Tetris.Models
 
         #region Ctor
 
-        public GameField(int width, int height)
+        public GameField(int width = 10, int height = 20)
         {
             this.Width = width > 0 ? width : throw new ArgumentException("width must be greater than zero");
             this.Height = height > 0 ? height : throw new ArgumentException("height must be greater than zero");
@@ -87,7 +87,9 @@ namespace Tetris.Models
             {
                 for (int j = ActiveFigureGizmo.Left, jj = 0; j < ActiveFigureGizmo.Right; j++, jj++)
                 {
-                    _field[i][j] = ActiveFigureGizmo[ii, jj];
+                    if ( ActiveFigureGizmo[ ii, jj ].HasValue ) {
+                        _field[ i ][ j ] = ActiveFigureGizmo[ ii, jj ];
+                    }
                 }
             }
 
@@ -204,7 +206,10 @@ namespace Tetris.Models
 
         public (Color?[][] data, int left, int top) GetFigureStack()
         {
-            return (_field.Skip( _fieldTop ).ToArray(), 0, 0);
+            if ( _fieldTop == _field.Count ) {
+                return ((new Color?[0][], 0, 0));
+            }
+            return (_field.Skip( _fieldTop ).ToArray(), 0, _fieldTop);
         }
 
         public (Color?[][] data, int left, int top) GetActiveFigure()

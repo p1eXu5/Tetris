@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,103 +14,144 @@ namespace Tetris.Components
 {
     public class TetrisCanvas : Canvas
     {
-        public static readonly DependencyProperty GameFieldDataProperty;
-
-        static TetrisCanvas()
-        {
-            FrameworkPropertyMetadata metadata = new FrameworkPropertyMetadata( 
-                new Color?[0][], 
-                new PropertyChangedCallback( GameFieldDataChanged ) 
-            );
-
-            metadata.CoerceValueCallback = CoerceGameField;
-
-            GameFieldDataProperty = DependencyProperty.Register( 
-                "GameFieldData", 
-                typeof( Color?[][] ), 
-                typeof( TetrisCanvas ), 
-                metadata
-            );
-        }
 
         private readonly List< Visual > _visuals = new List< Visual >();
         private readonly Brush _brush = Brushes.Brown;
-        private readonly Pen _pen = new Pen( Brushes.Black, 1.0 );
+        private readonly Pen _pen = new Pen( Brushes.Black, 0.05 ) {
+
+        };
         private int _gameFieldWidth;
         private int _gameFieldHeight;
-        private double _ki;
-        private double _kj;
+        private readonly IDictionary< Color, Brush > _brushes = new Dictionary< Color, Brush >(10);
+        private DrawingContext _lastContext;
 
-        public TetrisCanvas()
+        #region GameObjectsSourceProperty
+
+        public static readonly DependencyProperty GameObjectsSourceProperty = DependencyProperty.Register(
+            "GameObjectsSource",
+            typeof(ReadOnlyObservableCollection<(Color?[][] data, int left, int top)>),
+            typeof(TetrisCanvas),
+            new FrameworkPropertyMetadata(
+                (ReadOnlyObservableCollection<(Color?[][] data, int left, int top)>)null,
+                new PropertyChangedCallback(GameFieldDataChanged)
+            )
+        );
+
+        private static void GameFieldDataChanged( DependencyObject d, DependencyPropertyChangedEventArgs args )
         {
-            Loaded += AddSquare;
+            TetrisCanvas canvas = ( TetrisCanvas )d;
+            var oldValue = ( ReadOnlyObservableCollection< (Color?[][], int, int) > )args.OldValue;
+            var newValue = ( ReadOnlyObservableCollection< (Color?[][], int, int) > )args.NewValue;
+
+            if ( oldValue != null ) {
+                canvas.ClearGameObjects( oldValue );
+            }
+
+            if ( args.NewValue != null ) {
+                canvas.AddGameObjects( newValue );
+            }
         }
 
-        public Size GameFieldData
+        public ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectsSource
         {
-            get => ( Size )GetValue( GameFieldDataProperty );
-            set => SetValue( GameFieldDataProperty, value );
+            get => ( ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> )GetValue( GameObjectsSourceProperty );
+            set => SetValue( GameObjectsSourceProperty, value );
         }
+
+
+        internal void ClearGameObjects( ReadOnlyObservableCollection< (Color?[][], int, int) > col )
+        {
+            (( INotifyCollectionChanged )col).CollectionChanged -= OnGameObjectCollectionChanged;
+
+            foreach ( var visual in _visuals ) {
+                RemoveVisual( visual );
+            }
+
+            _visuals.Clear();
+        }
+
+        internal void AddGameObjects( ReadOnlyObservableCollection<(Color?[][], int, int)> col )
+        {
+            foreach (var element in col)
+            {
+                AddVisual( CreateVisual( element ) );
+            }
+
+            ((INotifyCollectionChanged)col).CollectionChanged += OnGameObjectCollectionChanged;
+        }
+
+
+        private Visual CreateVisual( (Color?[][] data, int left, int top) val )
+        {
+            (Color?[][] data, int left, int top) = val;
+
+            var visual = new DrawingVisual();
+            if ( !data.Any() ) return visual;
+
+            double halfPenWidth = _pen.Thickness / 2;
+
+            GuidelineSet guidelines = new GuidelineSet();
+            guidelines.GuidelinesX.Add(left + halfPenWidth);
+            guidelines.GuidelinesX.Add(left + data[0].Length + halfPenWidth);
+            guidelines.GuidelinesY.Add(top + halfPenWidth);
+            guidelines.GuidelinesY.Add(top + data.Length + halfPenWidth);
+
+            using ( var context = visual.RenderOpen() ) 
+            {
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for ( int i = 0; i < data.Length; i++ ) {
+                    for ( int j = 0; j < data[i].Length; j++ ) 
+                    {
+                        if ( data[ i ][ j ].HasValue ) 
+                        {
+                            if ( !_brushes.ContainsKey( data[ i ][ j ].Value ) ) {
+                                _brushes[ data[i][j].Value ] = new SolidColorBrush( data[i][j].Value );
+                            }
+                            context.PushGuidelineSet( guidelines );
+                            context.DrawRectangle( _brushes[ data[i][j].Value], _pen, new Rect( new Point( left + j, top + i ), new Size( 1, 1 )) );
+                        }
+                    }
+                }
+            }
+            
+            return visual;
+        }
+
+        private void OnGameObjectCollectionChanged( object sender, NotifyCollectionChangedEventArgs args )
+        {
+            if ( args.OldStartingIndex == args.NewStartingIndex ) 
+            {
+                var visual = args.NewItems?[ 0 ] != null 
+                                    ? CreateVisual( ( (Color?[][] data, int left, int top) )args.NewItems[ 0 ] ) 
+                                    : new DrawingVisual();
+
+                RemoveVisualChild( _visuals[args.NewStartingIndex] );
+                RemoveLogicalChild( _visuals[args.NewStartingIndex] );
+                _visuals[args.NewStartingIndex] = visual;
+                AddVisualChild( _visuals[args.NewStartingIndex] );
+                AddLogicalChild( _visuals[args.NewStartingIndex] );
+
+                return;
+            }
+
+            if ( args.NewItems?[ 0 ] != null ) {
+                var visual = CreateVisual( ( (Color?[][] data, int left, int top) )args.NewItems[ 0 ] );
+                AddVisual( visual );
+
+            }
+
+            if ( args.OldItems?[ 0 ] != null ) {
+                RemoveVisual( args.OldStartingIndex );
+            }
+        }
+
+        #endregion
 
         protected override Visual GetVisualChild(int index) => _visuals[index];
 
         protected override int VisualChildrenCount => _visuals.Count;
 
-        private static void GameFieldDataChanged( DependencyObject d, DependencyPropertyChangedEventArgs args )
-        {
-            TetrisCanvas canvas = ( TetrisCanvas )d;
-            canvas.Update( args.NewValue as Color?[][] );
-        }
-
-        private static object CoerceGameField( DependencyObject d, object value )
-        {
-            if ( value == null ) {
-                return new Color?[0][];
-            }
-
-            return value;
-        }
-
-        public void Update( Color?[][] gameField )
-        {
-            //var visuals = new List< Visual >( gameField.Length * gameField?[0].Length ?? 0 );
-            //for ( int i = 0; i < gameField.Length; i++ ) {
-            //    for ( int j = 0; j < gameField[i].Length; j++ ) {
-            //        if ( gameField[ i ][ j ].HasValue ) {
-            //            visuals.Add( GetVisual( gameField[ i ][ j ], i, j ) );
-            //        }
-            //    }
-            //}
-
-            //Replace( visuals );
-        }
-
-        private void RefreshKoefs( Color?[][] gameField )
-        {
-            if ( gameField.Length == 0 ) {
-                if ( _gameFieldHeight != 0 ) {
-                    _ki = 0.0;
-                    _kj = 0.0;
-                    _gameFieldHeight ^= _gameFieldHeight;
-                    if ( _gameFieldWidth != 0 ) _gameFieldWidth ^= _gameFieldWidth;
-                }
-
-                return;
-            }
-
-
-        }
-
-        private Visual GetVisual( Color color, int i, int j )
-        {
-            var visual = new DrawingVisual();
-
-            //using ( var context = visual.RenderOpen() ) {
-            //    context.DrawRectangle( _brush, _pen, new Rect( new Point( i * ki )) );
-            //}
-
-            return visual;
-        }
 
         private void AddVisual( Visual visual )
         {
@@ -124,15 +168,13 @@ namespace Tetris.Components
             base.RemoveVisualChild(visual);
             base.RemoveLogicalChild(visual);
         }
-        private void AddSquare( object sender, RoutedEventArgs args )
+        private void RemoveVisual(int index)
         {
-            var visual = new DrawingVisual();
+            var visual = _visuals[ index ];
+            _visuals.RemoveAt(index);
 
-            using ( var context = visual.RenderOpen() ) {
-                context.DrawRectangle( _brush, _pen, new Rect( new Size( 10, 10)) );
-            }
-
-            AddVisual( visual );
+            base.RemoveVisualChild(visual);
+            base.RemoveLogicalChild(visual);
         }
     }
 }
