@@ -18,14 +18,9 @@ namespace Tetris.Models
 
         public override IFigure Figure => Image.Figure;
 
-        public override Point Center
-        {
-            get => Image.Center;
-            set => Image.Center = value;
-        }
-
         public override Color Color => Image.Color;
         public override int Angle => Image.Angle;
+        public override Point Center => Image.Center;
 
         public ILiveFigureGizmo Image { get; set; }
     }

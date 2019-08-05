@@ -101,12 +101,33 @@ namespace Tetris.Models
         public bool TryRotateFigure(RotateDirections direction)
         {
             _activeFigureGizmoProxy.Rotate(direction);
-
-            if (IsOverlay(_activeFigureGizmoProxy))
+            
+            if (!IsOverlay(_activeFigureGizmoProxy))
             {
                 _activeFigureGizmoProxy.Image.Rotate(direction);
                 return true;
             }
+
+            int maxHorizontalOffset, maxVerticalOffset;
+            var vectorList = new List< Vector >();
+
+
+            if ( _activeFigureGizmoProxy.Width > _activeFigureGizmoProxy.Height ) {
+                maxHorizontalOffset = Math.Abs( _activeFigureGizmoProxy.Width - _activeFigureGizmoProxy.Height );
+                maxVerticalOffset = 1; // only down
+            }
+            else {
+                maxVerticalOffset = (int)Math.Ceiling(Math.Abs(_activeFigureGizmoProxy.Width / 2.0 - _activeFigureGizmoProxy.Height / 2.0));
+                maxHorizontalOffset = 1; // only right
+
+                for ( int i = maxVerticalOffset; i >= -(maxVerticalOffset - 1); i-- ) {
+                    
+                }
+            }
+
+         
+
+
 
             return false;
         }
@@ -172,9 +193,14 @@ namespace Tetris.Models
                 }
             }
 
-            _activeFigureGizmoProxy.Center = Point.Add(_activeFigureGizmoProxy.Center, vector);
+            MoveFigure( (ILiveFigureGizmo)ActiveFigureGizmo, vector );
 
             return true;
+        }
+
+        private void MoveFigure( ILiveFigureGizmo figure, Vector vector )
+        {
+            figure.Move( vector );
         }
 
         public int[] RemoveFilledLines()
@@ -250,6 +276,8 @@ namespace Tetris.Models
 
         private bool IsOverlay(IFigureGizmo figureGizmo)
         {
+            if ( figureGizmo.Top < 0 || figureGizmo.Bottom > Height || figureGizmo.Left < 0 || figureGizmo.Right > Width ) return false;
+
             for (int i = figureGizmo.Top, ii = 0; i < figureGizmo.Bottom; i++, ii++)
             {
                 for (int j = figureGizmo.Left, jj = 0; j < figureGizmo.Right; j++, jj++)

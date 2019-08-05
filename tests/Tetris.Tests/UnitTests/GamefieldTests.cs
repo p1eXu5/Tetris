@@ -313,6 +313,27 @@ namespace Tetris.Tests.UnitTests
         #endregion
 
 
+        #region TryRotateFigure
+
+        [ Test ]
+        public void TryRotateFigure_FigureIsEmpty_ReturnsFalse()
+        {
+            var gameField = GetGameField( 1, 1 );
+            Assert.False( gameField.TryRotateFigure( RotateDirections.Clockwise ) );
+        }
+
+        [Test]
+        public void TryRotateFigure_FigureIsNotEmpty_ReturnsTrue()
+        {
+            var gameField = GetGameField(10, 10);
+            gameField.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.TiFigure ) );
+
+            Assert.True(gameField.TryRotateFigure(RotateDirections.Clockwise));
+        }
+
+        #endregion
+
+
         #region Factory
 
         private IGameField GetGameField( int width, int height )

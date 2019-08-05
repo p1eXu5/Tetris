@@ -14,16 +14,67 @@ namespace Tetris.Components
 {
     public class TetrisCanvas : Canvas
     {
+        #region Fields
 
         private readonly List< Visual > _visuals = new List< Visual >();
-        private readonly Brush _brush = Brushes.Brown;
-        private readonly Pen _pen = new Pen( Brushes.Black, 0.05 ) {
-
-        };
-        private int _gameFieldWidth;
-        private int _gameFieldHeight;
+        private readonly Pen _pen = new Pen( Brushes.Black, 0.05 );
         private readonly IDictionary< Color, Brush > _brushes = new Dictionary< Color, Brush >(10);
-        private DrawingContext _lastContext;
+        private readonly GuidelineSet _guidelineSet = new GuidelineSet();
+
+        #endregion
+
+
+        #region Ctor
+
+        static TetrisCanvas()
+        {
+            WidthProperty.OverrideMetadata( typeof( TetrisCanvas ), new FrameworkPropertyMetadata(WidthChanged) );
+            HeightProperty.OverrideMetadata( typeof( TetrisCanvas ), new FrameworkPropertyMetadata(HeightChanged) );
+        }
+
+        #endregion
+
+
+        #region Width & Height
+
+        private static void WidthChanged( DependencyObject obj, DependencyPropertyChangedEventArgs args )
+        {
+            var tetrisCanvas = ( TetrisCanvas )obj;
+            
+            tetrisCanvas.UpdateHorizontalGuidelines( ( int )(double)args.NewValue );
+        }
+
+        private static void HeightChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        {
+            var tetrisCanvas = (TetrisCanvas)obj;
+            tetrisCanvas.UpdateVerticalGuidelines((int)(double)args.NewValue);
+        }
+
+        public void UpdateHorizontalGuidelines( int width )
+        {
+            this.VerifyAccess();
+
+            var penHalfWidth = _pen.Thickness / 2;
+
+            _guidelineSet.GuidelinesY.Clear();
+            _guidelineSet.GuidelinesY.Add( penHalfWidth );
+            _guidelineSet.GuidelinesY.Add( width + penHalfWidth );
+        }
+
+        public void UpdateVerticalGuidelines(int height)
+        {
+            this.VerifyAccess();
+
+            var penHalfWidth = _pen.Thickness / 2;
+
+            _guidelineSet.GuidelinesX.Clear();
+            _guidelineSet.GuidelinesX.Add(penHalfWidth);
+            _guidelineSet.GuidelinesX.Add(height + penHalfWidth);
+            
+        }
+
+        #endregion
+
 
         #region GameObjectsSourceProperty
 
@@ -88,17 +139,8 @@ namespace Tetris.Components
             var visual = new DrawingVisual();
             if ( !data.Any() ) return visual;
 
-            double halfPenWidth = _pen.Thickness / 2;
-
-            GuidelineSet guidelines = new GuidelineSet();
-            guidelines.GuidelinesX.Add(left + halfPenWidth);
-            guidelines.GuidelinesX.Add(left + data[0].Length + halfPenWidth);
-            guidelines.GuidelinesY.Add(top + halfPenWidth);
-            guidelines.GuidelinesY.Add(top + data.Length + halfPenWidth);
-
             using ( var context = visual.RenderOpen() ) 
             {
-
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for ( int i = 0; i < data.Length; i++ ) {
                     for ( int j = 0; j < data[i].Length; j++ ) 
@@ -108,7 +150,7 @@ namespace Tetris.Components
                             if ( !_brushes.ContainsKey( data[ i ][ j ].Value ) ) {
                                 _brushes[ data[i][j].Value ] = new SolidColorBrush( data[i][j].Value );
                             }
-                            context.PushGuidelineSet( guidelines );
+                            context.PushGuidelineSet( _guidelineSet );
                             context.DrawRectangle( _brushes[ data[i][j].Value], _pen, new Rect( new Point( left + j, top + i ), new Size( 1, 1 )) );
                         }
                     }
@@ -148,11 +190,12 @@ namespace Tetris.Components
 
         #endregion
 
+
+        #region Visuals
+
         protected override Visual GetVisualChild(int index) => _visuals[index];
-
         protected override int VisualChildrenCount => _visuals.Count;
-
-
+        
         private void AddVisual( Visual visual )
         {
             _visuals.Add( visual );
@@ -160,7 +203,6 @@ namespace Tetris.Components
             AddVisualChild( visual );
             AddLogicalChild( visual );
         }
-
         private void RemoveVisual(Visual visual)
         {
             _visuals.Remove(visual);
@@ -176,5 +218,7 @@ namespace Tetris.Components
             base.RemoveVisualChild(visual);
             base.RemoveLogicalChild(visual);
         }
+
+        #endregion
     }
 }

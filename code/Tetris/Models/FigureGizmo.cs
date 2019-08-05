@@ -16,14 +16,14 @@ namespace Tetris.Models
         public FigureGizmo( IFigure figure )
         {
             Figure = figure;
-            Center = new Point( figure.Width / 2.0, figure.Height / 2.0 );
+            _center = new Point( figure.Width / 2.0, figure.Height / 2.0 );
             _angle = 0;
         }
 
         public static FigureGizmo EmptyGizmo => _emptyGizmo ?? (_emptyGizmo = new FigureGizmo( new Figure() ));
 
         public override IFigure Figure { get; }
-        public override Point Center { get; set; }
+        public override Point Center => _center;
         public override int Angle => _angle;
         public override Color Color => Figure.Color;
     }

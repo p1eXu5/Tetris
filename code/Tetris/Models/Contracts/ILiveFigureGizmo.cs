@@ -10,8 +10,7 @@ namespace Tetris.Models.Contracts
 {
     public interface ILiveFigureGizmo : IFigureGizmo
     {
-        new Point Center { get; set; }
-
+        void Move( Vector vector );
         void Rotate( RotateDirections direction );
         void CounterclockwiseRotate();
         void ClockwiseRotate();

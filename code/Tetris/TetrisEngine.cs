@@ -17,9 +17,16 @@ namespace Tetris
 {
     public class TetrisEngine : ITetrisEngine, IDisposable
     {
+        #region Constants
+
         private const int MIN_SPEED = 600;
         private const int MAN_SPEED = 100;
         private const int SPEED_STEP = 50;
+
+        #endregion
+
+
+        #region Fields
 
         private readonly IFigureFlyweightFactory _factory;
         private readonly IGameField _gameField;
@@ -29,33 +36,46 @@ namespace Tetris
         private int _isRunning;
         private int _timerInvoked;
         private readonly ObservableCollection<(Color?[][] data, int left, int top)> _gameObjectCollection;
+        private readonly object _lock = new object();
 
-        public TetrisEngine( IFigureFlyweightFactory factory, IGameField graveyard, int speed = MIN_SPEED )
+        #endregion
+
+
+        #region Ctor
+
+        public TetrisEngine(IFigureFlyweightFactory factory, IGameField graveyard, int speed = MIN_SPEED)
         {
             _factory = factory ?? throw new ArgumentNullException();
             _gameField = graveyard ?? throw new ArgumentNullException();
 
-            _timer = new Timer( OnTimer );
+            _timer = new Timer(OnTimer);
             _speed = speed < MAN_SPEED ? MAN_SPEED : speed > MIN_SPEED ? MIN_SPEED : speed;
 
-            _gameObjectCollection = new ObservableCollection< (Color?[][] data, int left, int top) >();
-            GameObjectCollection = new ReadOnlyObservableCollection< (Color?[][] data, int left, int top) >( _gameObjectCollection );
+            _gameObjectCollection = new ObservableCollection<(Color?[][] data, int left, int top)>();
+            GameObjectCollection = new ReadOnlyObservableCollection<(Color?[][] data, int left, int top)>(_gameObjectCollection);
 
-            _gameObjectCollection.Add( _gameField.GetFigureStack() );
-            _gameObjectCollection.Add( _gameField.GetActiveFigure() );
+            _gameObjectCollection.Add(_gameField.GetFigureStack());
+            _gameObjectCollection.Add(_gameField.GetActiveFigure());
 
-            try {
+            try
+            {
                 TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             }
-            catch ( InvalidOperationException ) {
+            catch (InvalidOperationException)
+            {
                 TaskScheduler = TaskScheduler.Default;
             }
-        }
+        } 
+
+        #endregion
+
+
 
         public event EventHandler< int[] > RemovableLinesFormed;
 
         public TaskScheduler TaskScheduler { get; set; }
 
+        public bool HasActiveFigure => !_gameField.ActiveFigureGizmo.IsEmptyGizmo;
         public ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
 
         public bool IsRunning => _isRunning == 1;
@@ -85,56 +105,64 @@ namespace Tetris
         {
             if (Interlocked.Exchange( ref _timerInvoked, 1 ) != 0 ) return;
 
-            Task.Run( TakeFigureDown ).ContinueWith( 
-                task => 
-                {
-                    var res = task.Result;
+            var t = new Task( MoveFigureDown );
+            t.RunSynchronously( TaskScheduler );
+            t.Wait();
 
-                    if ( res[ 0 ] < -1 ) {
-                        _gameObjectCollection[ 0 ] = _gameField.GetFigureStack();
-                    }
-
-                    if ( res.Length > 1 ) {
-                        RemovableLinesFormed?.Invoke( this, res.Skip( 1 ).ToArray() );
-                    }
-
-                    _gameObjectCollection[ 1 ] = _gameField.GetActiveFigure();
-
-                    if ( res[ 0 ] == -4 ) {
-                        GameOver();
-                    }
-
-                    Volatile.Write( ref _timerInvoked, 0 );
-                },
-                TaskScheduler
-            );
-
+            Volatile.Write( ref _timerInvoked, 0 );
         }
 
-        public int[] TakeFigureDown()
+        private async void MoveFigureDown()
         {
-            var res = new List< int > { -1 };
 
-            if ( _gameField.TryMove( _gravityVector ) ) {
-                return new[]{-1};
+            bool isLocked = false;
+            Monitor.Enter( _lock, ref isLocked );
+
+            var res = await Task.Run( () => {
+
+                var innerRes = new List< int > { -1 };
+
+                if ( _gameField.TryMove( _gravityVector ) ) {
+                    return new[] {-1 };
+                }
+
+                _gameField.Merge();
+                innerRes[0] = -2;
+                    
+                var removedLines = _gameField.RemoveFilledLines();
+                
+                if ( removedLines.Any() ) {
+                    innerRes[0] = -3;
+                    foreach ( var t in removedLines ) { innerRes.Add( t ); }
+                }
+
+                if ( !_gameField.TryAddFigure( _factory.GetNext() ) ) {
+                    innerRes[0] = -4;
+                }
+
+                return innerRes.ToArray();
+            } );
+
+
+            if (res[0] < -1)
+            {
+                _gameObjectCollection[0] = _gameField.GetFigureStack();
             }
 
-            _gameField.Merge();
-            res[0] = -2;
-
-            var removedLines = _gameField.RemoveFilledLines();
-            if ( removedLines.Any() ) {
-                res[0] = -3;
-                foreach ( var t in removedLines ) { res.Add( t ); }
+            if (res.Length > 1)
+            {
+                RemovableLinesFormed?.Invoke(this, res.Skip(1).ToArray());
             }
 
-            if ( !_gameField.TryAddFigure( _factory.GetNext() ) ) {
-                return new[] { -4 };
+            _gameObjectCollection[1] = _gameField.GetActiveFigure();
+
+            if (res[0] == -4)
+            {
+                GameOver();
             }
 
-            return res.ToArray();
+            if ( isLocked ) Monitor.Exit( _lock );
         }
-
 
         public void SpeedDown()
         {
@@ -147,12 +175,66 @@ namespace Tetris
             if (MIN_SPEED - _speed < SPEED_STEP) return;
             _speed += SPEED_STEP;
         }
-        public void MoveFigureLeft()
+        public async Task MoveFigureLeftAsync()
         {
-            throw new NotImplementedException();
+            bool isLocked = false;
+            Monitor.Enter( _lock, ref isLocked);
+
+            var res = await Task.Run( () => _gameField.TryMove( new Vector( -1.0, 0.0 ) ) );
+
+            if ( res ) {
+                _gameObjectCollection[ 1 ] = _gameField.GetActiveFigure();
+            }
+
+            if ( isLocked ) Monitor.Exit( _lock );
         }
 
-        public void MoveFigureRight()
+        public async Task MoveFigureRightAsync()
+        {
+            bool isLocked = false;
+            Monitor.Enter(_lock, ref isLocked);
+
+            var res = await Task.Run(() => _gameField.TryMove(new Vector(1.0, 0.0) ) );
+
+            if (res)
+            {
+                _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            }
+
+            if (isLocked) Monitor.Exit(_lock);
+        }
+
+        public async Task RotateFigureClockwiseAsync()
+        {
+            bool isLocked = false;
+            Monitor.Enter(_lock, ref isLocked);
+
+            var res = await Task.Run(() => _gameField.TryRotateFigure( RotateDirections.Clockwise ) );
+
+            if (res)
+            {
+                _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            }
+
+            if (isLocked) Monitor.Exit(_lock);
+        }
+
+        public async Task RotateFigureCounterclockwiseAsync()
+        {
+            bool isLocked = false;
+            Monitor.Enter(_lock, ref isLocked);
+
+            var res = await Task.Run(() => _gameField.TryRotateFigure(RotateDirections.Couterclockwise ) );
+
+            if (res)
+            {
+                _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            }
+
+            if (isLocked) Monitor.Exit(_lock);
+        }
+
+        public Task DropFigureAsync()
         {
             throw new NotImplementedException();
         }

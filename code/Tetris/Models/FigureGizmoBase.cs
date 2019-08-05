@@ -13,14 +13,15 @@ namespace Tetris.Models
     public abstract class FigureGizmoBase : ILiveFigureGizmo, IFigureGizmo, IEnumerable< Color?[] >
     {
         protected int _angle;
+        protected Point _center;
 
         public abstract IFigure Figure { get; }
-        public abstract Point Center { get; set; }
+        public abstract int Angle { get; }
+        public abstract Point Center { get; }
         public int Width => GetWidth( _angle );
         public int Height => GetHeight( _angle );
         public abstract Color Color { get; }
 
-        public abstract int Angle { get; }
 
         public void Rotate( RotateDirections direction )
         {
@@ -30,6 +31,11 @@ namespace Tetris.Models
             else {
                 CounterclockwiseRotate();
             }
+        }
+
+        public void Move( Vector vector )
+        {
+            _center = Point.Add( _center, vector );
         }
 
         public void CounterclockwiseRotate()
@@ -79,9 +85,9 @@ namespace Tetris.Models
             throw new InvalidOperationException("Wrong angle");
         }
 
-        public int Top => (int)(Center.Y - Height / 2.0);
+        public int Top => (int)Math.Floor(Center.Y - Height / 2.0);
         public int Bottom => Top + Height; 
-        public int Left => (int)(Center.X - Width / 2.0);
+        public int Left => (int)Math.Floor(Center.X - Width / 2.0);
         public int Right => Left + Width;
 
         public Color? this[int i, int j]
@@ -107,7 +113,7 @@ namespace Tetris.Models
 
         public void MoveTo(Point point)
         {
-            Center = point;
+            _center = point;
         }
 
         public IEnumerator< Color?[] > GetEnumerator()

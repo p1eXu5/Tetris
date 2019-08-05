@@ -16,6 +16,7 @@ namespace Tetris
     {
         private readonly ITetrisEngine _tetrisEngine;
         private int[] _removableLines;
+        private string _commandName = "";
 
         public MainViewModel( ITetrisEngine tetrisEngine )
         {
@@ -29,6 +30,16 @@ namespace Tetris
         public int Height => _tetrisEngine.GameFieldHeight;
         public ReadOnlyObservableCollection< (Color?[][], int, int ) > GameObjectCollection => _tetrisEngine.GameObjectCollection;
 
+
+        public string CommandName
+        {
+            get => _commandName;
+            set {
+                _commandName = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int[] RemovableLines
         {
             get => _removableLines;
@@ -38,11 +49,24 @@ namespace Tetris
             }
         }
 
-        public ICommand StartGameCommand => new MvvmAsyncCommand( StartGame, o => !_tetrisEngine.IsRunning );
+        public ICommand StartGameCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.StartNewGameAsync(), 
+                                                                  o => !_tetrisEngine.IsRunning );
+        public ICommand MoveLeftCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.MoveFigureLeftAsync(), 
+                                                                 o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+        public ICommand MoveRightCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.MoveFigureRightAsync(), 
+                                                                  o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+        public ICommand RotateClockwiseCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.RotateFigureClockwiseAsync(), 
+                                                                        o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+        public ICommand RotateCounterclockwiseCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.RotateFigureCounterclockwiseAsync(), 
+                                                                               o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+        public ICommand FallDownCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.DropFigureAsync(), 
+                                                                 o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+
 
         private async Task StartGame( object o )
         {
             await _tetrisEngine.StartNewGameAsync();
         }
+
     }
 }

@@ -16,11 +16,19 @@ namespace Tetris.Contracts
         int GameFieldHeight { get; }
 
         bool IsRunning { get; }
+        bool HasActiveFigure { get; }
 
         ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
         Color?[][] GetGameField();
 
         void StartNewGame();
         Task StartNewGameAsync();
+        Task MoveFigureLeftAsync();
+        Task MoveFigureRightAsync();
+
+        Task RotateFigureClockwiseAsync();
+        Task RotateFigureCounterclockwiseAsync();
+
+        Task DropFigureAsync();
     }
 }
