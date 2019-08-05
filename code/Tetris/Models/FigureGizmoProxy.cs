@@ -16,10 +16,19 @@ namespace Tetris.Models
             Image = image ?? throw new ArgumentNullException();
         }
 
+        /// <summary>
+        /// <see cref="IFigureGizmoProxy.Image"/>
+        /// </summary>
         public override IFigure Figure => Image.Figure;
 
-        public override Color Color => Image.Color;
+        /// <summary>
+        /// <see cref="IFigureGizmoProxy.Angle"/>
+        /// </summary>
         public override int Angle => Image.Angle;
+
+        /// <summary>
+        /// <see cref="IFigureGizmoProxy.Center"/>
+        /// </summary>
         public override Point Center => Image.Center;
 
         public ILiveFigureGizmo Image { get; set; }

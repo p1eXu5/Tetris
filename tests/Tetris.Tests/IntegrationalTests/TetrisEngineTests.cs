@@ -42,7 +42,7 @@ namespace Tetris.Tests.IntegrationalTests
         public ITetrisEngine GetTetrisEngine()
         {
             var figureFactory = new FigureFlyweightFactory();
-            var gameField = new GameField( 10, 20 );
+            var gameField = new GameField( new VectorSpinner(), 10, 20 );
             return new TetrisEngine( figureFactory, gameField, 0 );
         }
 

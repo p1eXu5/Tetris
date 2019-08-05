@@ -25,6 +25,5 @@ namespace Tetris.Models
         public override IFigure Figure { get; }
         public override Point Center => _center;
         public override int Angle => _angle;
-        public override Color Color => Figure.Color;
     }
 }

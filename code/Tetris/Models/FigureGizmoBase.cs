@@ -20,7 +20,7 @@ namespace Tetris.Models
         public abstract Point Center { get; }
         public int Width => GetWidth( _angle );
         public int Height => GetHeight( _angle );
-        public abstract Color Color { get; }
+        public Color Color => Figure.Color;
 
 
         public void Rotate( RotateDirections direction )

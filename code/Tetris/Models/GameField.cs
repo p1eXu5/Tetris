@@ -17,14 +17,16 @@ namespace Tetris.Models
         private readonly List<Color?[]> _field;
         private readonly IFigureGizmoProxy _activeFigureGizmoProxy;
         private int _fieldTop;
+        private readonly IVectorSpinner _vectorSpinner;
 
         #endregion
 
 
         #region Ctor
 
-        public GameField(int width = 10, int height = 20)
+        public GameField( IVectorSpinner vectorSpinner, int width = 10, int height = 20)
         {
+            _vectorSpinner = vectorSpinner ?? throw new ArgumentNullException(nameof(vectorSpinner), @"IVectorSpinner cannot be null."); ;
             this.Width = width > 0 ? width : throw new ArgumentException("width must be greater than zero");
             this.Height = height > 0 ? height : throw new ArgumentException("height must be greater than zero");
 
@@ -108,26 +110,13 @@ namespace Tetris.Models
                 return true;
             }
 
-            int maxHorizontalOffset, maxVerticalOffset;
-            var vectorList = new List< Vector >();
-
-
-            if ( _activeFigureGizmoProxy.Width > _activeFigureGizmoProxy.Height ) {
-                maxHorizontalOffset = Math.Abs( _activeFigureGizmoProxy.Width - _activeFigureGizmoProxy.Height );
-                maxVerticalOffset = 1; // only down
-            }
-            else {
-                maxVerticalOffset = (int)Math.Ceiling(Math.Abs(_activeFigureGizmoProxy.Width / 2.0 - _activeFigureGizmoProxy.Height / 2.0));
-                maxHorizontalOffset = 1; // only right
-
-                for ( int i = maxVerticalOffset; i >= -(maxVerticalOffset - 1); i-- ) {
-                    
+            foreach ( var vector in _vectorSpinner.GetVectors( _activeFigureGizmoProxy.Width, _activeFigureGizmoProxy.Height ) ) {
+                _activeFigureGizmoProxy.MoveTo( Point.Add( _activeFigureGizmoProxy.Center, vector ) );
+                if ( !IsOverlay( _activeFigureGizmoProxy ) ) {
+                    _activeFigureGizmoProxy.Image.Move( vector );
+                    return true;
                 }
             }
-
-         
-
-
 
             return false;
         }

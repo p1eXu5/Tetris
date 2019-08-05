@@ -82,6 +82,7 @@
     <Compile Include="Components\TetrisCanvas.cs" />
     <Compile Include="Contracts\ITetrisEngine.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
+    <Compile Include="Models\Contracts\IVectorSpinner.cs" />
     <Compile Include="Models\FigureGizmo.cs" />
     <Compile Include="Models\FigureGizmoBase.cs" />
     <Compile Include="Models\FigureGizmoEnumerator.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Models\Contracts\IGameField.cs" />
     <Compile Include="Models\Contracts\ILiveFigureGizmo.cs" />
     <Compile Include="Models\RotateDirections.cs" />
+    <Compile Include="Models\VectorSpinner.cs" />
     <Compile Include="TetrisEngine.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

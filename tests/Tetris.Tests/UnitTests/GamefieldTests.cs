@@ -15,28 +15,29 @@ namespace Tetris.Tests.UnitTests
     public class GameFieldTests
     {
         #region Ctor
+
         [Test]
         public void Ctor_ZeroWidth_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>( () => new GameField( 0, 1 ) );
+            Assert.Throws<ArgumentException>( () => new GameField( new VectorSpinner(),0, 1 ) );
         }
 
         [Test]
         public void Ctor_NegativeWidth_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(() => new GameField(-1, 1));
+            Assert.Throws<ArgumentException>(() => new GameField( new VectorSpinner(), -1, 1));
         }
 
         [Test]
         public void Ctor_ZeroHeight_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(() => new GameField(1, -1));
+            Assert.Throws<ArgumentException>(() => new GameField( new VectorSpinner(), 1, -1 ) );
         }
 
         [Test]
         public void Ctor_NegativeHeight_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(() => new GameField(1, -1));
+            Assert.Throws<ArgumentException>(() => new GameField(new VectorSpinner(), 1, -1));
         }
 
         #endregion
@@ -76,7 +77,7 @@ namespace Tetris.Tests.UnitTests
             Assert.Throws<ArgumentException>(() => gameField.TryAddFigure(figureGizmo));
         }
 
-        [ TestCaseSource( typeof(TryAddFigureTestCases), nameof( TryAddFigureTestCases.DefaultPlacing )) ]
+        [ TestCaseSource( typeof(GameFieldTestCases), nameof( GameFieldTestCases.InitialFigurePlacementCases )) ]
         public Color?[][] TryAddFigure_ByDefault_AddFigureToTheCenterTop( int width, int height, ILiveFigureGizmo figureGizmo )
         {
             var gameField = GetGameField( width, height );
@@ -338,7 +339,7 @@ namespace Tetris.Tests.UnitTests
 
         private IGameField GetGameField( int width, int height )
         {
-            var gamefield = new GameField( width, height );
+            var gamefield = new GameField( new VectorSpinner(), width, height );
 
             return gamefield;
         }
@@ -354,7 +355,7 @@ namespace Tetris.Tests.UnitTests
 
         private IGameField GetFilledGameField()
         {
-            var gamefield = new GameField(5, 4);
+            var gamefield = new GameField( new VectorSpinner(), 5, 4);
             gamefield.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.TiFigure ) );
             gamefield.TryMove( new Vector( 0, 1.0 ) );
             gamefield.TryMove( new Vector( 0, 1.0 ) );

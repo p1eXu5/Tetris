@@ -5,9 +5,9 @@ using System.Windows.Media;
 
 namespace Tetris.Tests.UnitTests.TestCases
 {
-    public class TryAddFigureTestCases
+    public class GameFieldTestCases
     {
-        public static IEnumerable DefaultPlacing()
+        public static IEnumerable InitialFigurePlacementCases()
         {
             var i = 0;
 
