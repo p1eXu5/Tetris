@@ -22,6 +22,7 @@ namespace Tetris
         private const int MIN_SPEED = 600;
         private const int MAN_SPEED = 100;
         private const int SPEED_STEP = 50;
+        private const int DROPPING_SPEED = 20;
 
         #endregion
 
@@ -39,6 +40,7 @@ namespace Tetris
         private readonly object _lock = new object();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim( 1, 1 );
         private TaskScheduler _taskScheduler;
+        private bool _isDropping;
 
         #endregion
 
@@ -82,6 +84,7 @@ namespace Tetris
         }
 
         public bool CanManipulate => !_gameField.ActiveFigureGizmo.IsEmptyGizmo && IsRunning;
+        public bool IsDropping => _isDropping;
         public ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
 
         public bool IsRunning => _isRunning == 1;
@@ -125,19 +128,29 @@ namespace Tetris
             t.RunSynchronously( TaskScheduler );
             t.Wait();
 
+            
+
             Volatile.Write( ref _timerInvoked, 0 );
         }
 
         private async void MoveFigureDown()
         {
-            _semaphore.Wait();
 
             var res = await Task.Run( () => {
+                
+                _semaphore.Wait();
 
                 var innerRes = new List< int > { -1 };
 
                 if ( _gameField.TryMove( _gravityVector ) ) {
+                    _semaphore.Release();
                     return new[] {-1 };
+                }
+
+                if (_isDropping)
+                {
+                    _timer.Change(0, _speed);
+                    _isDropping = false;
                 }
 
                 _gameField.Merge();
@@ -154,6 +167,7 @@ namespace Tetris
                     innerRes[0] = -4;
                 }
 
+                _semaphore.Release();
                 return innerRes.ToArray();
             } );
 
@@ -174,7 +188,6 @@ namespace Tetris
                 GameOver();
             }
 
-            _semaphore.Release();
         }
 
         public void SpeedDown()
@@ -210,9 +223,10 @@ namespace Tetris
         }
 
 
-        public Task DropFigureAsync()
+        public void DropFigure()
         {
-            throw new NotImplementedException();
+            _isDropping = true;
+            _timer.Change( 0, DROPPING_SPEED);
         }
 
         public void Dispose()

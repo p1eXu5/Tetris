@@ -19,6 +19,8 @@ namespace Tetris.Contracts
         bool IsRunning { get; }
         bool CanManipulate { get; }
 
+        bool IsDropping { get; }
+
         ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
 
         Task StartNewGameAsync( TaskScheduler taskScheduler );
@@ -32,6 +34,6 @@ namespace Tetris.Contracts
         Task< bool > RotateFigureAsync( RotateDirections rotateDirections );
 
 
-        Task DropFigureAsync();
+        void DropFigure();
     }
 }

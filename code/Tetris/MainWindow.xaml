@@ -15,9 +15,9 @@
     <Window.InputBindings>
         <KeyBinding Key="Left" Command="{Binding MoveLeftCommand}" />
         <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
-        <KeyBinding Key="Down" Command="{Binding RotateClockwiseCommand}" />
+        <KeyBinding Key="Space" Command="{Binding RotateClockwiseCommand}" />
         <KeyBinding Key="Up" Command="{Binding RotateCounterclockwiseCommand}" />
-        <KeyBinding Key="Space" Command="{Binding FallDownCommand}" />
+        <KeyBinding Key="Down" Command="{Binding FallDownCommand}" />
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

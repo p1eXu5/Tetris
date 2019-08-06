@@ -202,19 +202,21 @@ namespace Tetris.Models
         {
             var res = new List<int>(Height);
 
-            for (int i = 0; i < _field.Count; i++) {
+            for (int i = _fieldTop; i < Height; i++) {
                 if (_field[i].All(col => col.HasValue)) {
                     res.Add(i);
                 }
             }
 
+            if ( !res.Any() ) return new int[0];
+
             int offset = 0;
 
             for ( int i = Height - 1; i >= offset; --i ) {
-                if ( res.Contains( i - offset ) ) {
+                while ( res.Contains( i - offset ) && ( i - offset) >= 0 ) {
                     ++offset;
-                    if ( i - offset < 0) break;
                 }
+                if ( i - offset < 0) break;
                 _field[ i ] = _field[ i - offset ];
             }
 

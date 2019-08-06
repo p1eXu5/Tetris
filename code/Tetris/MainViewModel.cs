@@ -59,8 +59,8 @@ namespace Tetris
                                                                         o => _tetrisEngine.CanManipulate);
         public ICommand RotateCounterclockwiseCommand => new MvvmAsyncCommand( async _ => await RotateFigureAsync( RotateDirections.Couterclockwise ), 
                                                                                o => _tetrisEngine.CanManipulate);
-        public ICommand FallDownCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.DropFigureAsync(), 
-                                                                 o => _tetrisEngine.CanManipulate );
+        public ICommand FallDownCommand => new MvvmCommand( _ => _tetrisEngine.DropFigure(), 
+                                                                 o => !_tetrisEngine.IsDropping );
 
 
         private async Task StartGameAsync( object o )
