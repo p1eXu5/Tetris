@@ -23,6 +23,20 @@ namespace Tetris.Models
         public Color Color => Figure.Color;
 
 
+        public void MoveTo(Point point)
+        {
+            _center = point;
+        }
+
+        /// <summary>
+        /// Adds vector to the Center property.
+        /// </summary>
+        /// <param name="vector"></param>
+        public void Move( Vector vector )
+        {
+            _center = Point.Add( Center, vector );
+        }
+
         public void Rotate( RotateDirections direction )
         {
             if ( direction == RotateDirections.Clockwise ) {
@@ -33,10 +47,6 @@ namespace Tetris.Models
             }
         }
 
-        public void Move( Vector vector )
-        {
-            _center = Point.Add( _center, vector );
-        }
 
         public void CounterclockwiseRotate()
         {
@@ -85,9 +95,9 @@ namespace Tetris.Models
             throw new InvalidOperationException("Wrong angle");
         }
 
-        public int Top => (int)Math.Floor(Center.Y - Height / 2.0);
+        public int Top => (int)Math.Floor(_center.Y - Height / 2.0);
         public int Bottom => Top + Height; 
-        public int Left => (int)Math.Floor(Center.X - Width / 2.0);
+        public int Left => (int)Math.Floor(_center.X - Width / 2.0);
         public int Right => Left + Width;
 
         public Color? this[int i, int j]
@@ -111,10 +121,6 @@ namespace Tetris.Models
 
         public bool IsEmptyGizmo => Figure.Width == 0 && Figure.Height == 0;
 
-        public void MoveTo(Point point)
-        {
-            _center = point;
-        }
 
         public IEnumerator< Color?[] > GetEnumerator()
         {

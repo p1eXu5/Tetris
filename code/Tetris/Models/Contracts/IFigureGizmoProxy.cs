@@ -24,5 +24,6 @@ namespace Tetris.Models.Contracts
         /// Image center.
         /// </summary>
         new Point Center { get; }
+
     }
 }
