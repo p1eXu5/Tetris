@@ -33,6 +33,7 @@ namespace Tetris
         private void SetupServices()
         {
             _container.RegisterType< IFigureFlyweightFactory, FigureFlyweightFactory >();
+            _container.RegisterType< IVectorSpinner, VectorSpinner >();
             _container.RegisterType< IGameField, GameField >();
             _container.RegisterType< ITetrisEngine, TetrisEngine >();
             _container.RegisterType< MainViewModel >();

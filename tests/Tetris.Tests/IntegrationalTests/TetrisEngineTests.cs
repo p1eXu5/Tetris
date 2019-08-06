@@ -24,7 +24,7 @@ namespace Tetris.Tests.IntegrationalTests
             var engine = GetTetrisEngine();
             (( INotifyCollectionChanged )engine.GameObjectCollection).CollectionChanged += ( sender, args ) => ++count;
 
-            var task = engine.StartNewGameAsync();
+            var task = engine.StartNewGameAsync( null );
             task.Wait();
 
             while ( engine.IsRunning ) {

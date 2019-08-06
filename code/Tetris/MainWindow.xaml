@@ -9,7 +9,9 @@
         d:DataContext="{d:DesignInstance local:MainViewModel}"
       
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="800">
+        Title="MainWindow" Height="700" Width="800"
+        Background="DarkGray"
+        >
     <Window.InputBindings>
         <KeyBinding Key="Left" Command="{Binding MoveLeftCommand}" />
         <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
@@ -23,7 +25,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Viewbox RenderOptions.EdgeMode="Unspecified" UseLayoutRounding="True" SnapsToDevicePixels="True">
-            <components:TetrisCanvas x:Name="m_canvas" Width="{Binding Width}" Height="{Binding Height}" GameObjectsSource="{Binding GameObjectCollection}" >
+            <components:TetrisCanvas x:Name="m_canvas" Width="{Binding Width}" Height="{Binding Height}" GameObjectsSource="{Binding GameObjectCollection}" 
+                                     Background="Beige">
                 <components:TetrisCanvas.InputBindings>
                 </components:TetrisCanvas.InputBindings>
             </components:TetrisCanvas>

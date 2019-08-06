@@ -102,18 +102,25 @@ namespace Tetris.Models
 
         public bool TryRotateFigure(RotateDirections direction)
         {
+            if (ActiveFigureGizmo.IsEmptyGizmo) {
+                return false;
+            }
+
             _activeFigureGizmoProxy.Rotate(direction);
             
-            if (!IsOverlay(_activeFigureGizmoProxy))
+            if ( !IsOverlay( _activeFigureGizmoProxy ) )
             {
                 _activeFigureGizmoProxy.Image.Rotate(direction);
                 return true;
             }
 
-            foreach ( var vector in _vectorSpinner.GetVectors( _activeFigureGizmoProxy.Width, _activeFigureGizmoProxy.Height ) ) {
-                _activeFigureGizmoProxy.MoveTo( Point.Add( _activeFigureGizmoProxy.Center, vector ) );
+            foreach ( var vector in _vectorSpinner.GetVectors( _activeFigureGizmoProxy.Width, _activeFigureGizmoProxy.Height ) ) 
+            {
+                _activeFigureGizmoProxy.Move( vector );
+
                 if ( !IsOverlay( _activeFigureGizmoProxy ) ) {
                     _activeFigureGizmoProxy.Image.Move( vector );
+                    _activeFigureGizmoProxy.Image.Rotate( direction );
                     return true;
                 }
             }
@@ -123,13 +130,11 @@ namespace Tetris.Models
 
         public bool TryMove(Vector vector)
         {
-            if (!vector.LengthSquared.Equals(1.0))
-            {
+            if (!vector.LengthSquared.Equals(1.0)) {
                 throw new ArgumentException("Vector is wrong");
             }
 
-            if (ActiveFigureGizmo.IsEmptyGizmo)
-            {
+            if (ActiveFigureGizmo.IsEmptyGizmo) {
                 return false;
             }
 
@@ -182,7 +187,8 @@ namespace Tetris.Models
                 }
             }
 
-            MoveFigure( (ILiveFigureGizmo)ActiveFigureGizmo, vector );
+            ((ILiveFigureGizmo)ActiveFigureGizmo).Move( vector );
+            _activeFigureGizmoProxy.MoveTo( _activeFigureGizmoProxy.Center );
 
             return true;
         }
@@ -265,7 +271,7 @@ namespace Tetris.Models
 
         private bool IsOverlay(IFigureGizmo figureGizmo)
         {
-            if ( figureGizmo.Top < 0 || figureGizmo.Bottom > Height || figureGizmo.Left < 0 || figureGizmo.Right > Width ) return false;
+            if ( figureGizmo.Top < 0 || figureGizmo.Bottom > Height || figureGizmo.Left < 0 || figureGizmo.Right > Width ) return true;
 
             for (int i = figureGizmo.Top, ii = 0; i < figureGizmo.Bottom; i++, ii++)
             {

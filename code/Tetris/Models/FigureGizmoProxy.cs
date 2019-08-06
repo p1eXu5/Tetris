@@ -14,6 +14,8 @@ namespace Tetris.Models
         public FigureGizmoProxy( ILiveFigureGizmo image )
         {
             Image = image ?? throw new ArgumentNullException();
+            _center = Image.Center;
+            _angle = Image.Angle;
         }
 
         /// <summary>

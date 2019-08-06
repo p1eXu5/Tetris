@@ -37,6 +37,8 @@ namespace Tetris
         private int _timerInvoked;
         private readonly ObservableCollection<(Color?[][] data, int left, int top)> _gameObjectCollection;
         private readonly object _lock = new object();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim( 1, 1 );
+        private TaskScheduler _taskScheduler;
 
         #endregion
 
@@ -73,32 +75,46 @@ namespace Tetris
 
         public event EventHandler< int[] > RemovableLinesFormed;
 
-        public TaskScheduler TaskScheduler { get; set; }
+        public TaskScheduler TaskScheduler
+        {
+            get => _taskScheduler ?? TaskScheduler.Default; 
+            private set => _taskScheduler = value;
+        }
 
-        public bool HasActiveFigure => !_gameField.ActiveFigureGizmo.IsEmptyGizmo;
+        public bool CanManipulate => !_gameField.ActiveFigureGizmo.IsEmptyGizmo && IsRunning;
         public ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
 
         public bool IsRunning => _isRunning == 1;
 
-        private void RunGame()
+
+        public async Task StartNewGameAsync( TaskScheduler taskScheduler )
         {
+            await Task.Run( () => RunGame( taskScheduler ) );
+        }
+
+        public void UpdateField()
+        {
+            _gameObjectCollection[0] = _gameField.GetFigureStack();
+        }
+
+        public void UpdateFigure()
+        {
+            _gameObjectCollection[1] = _gameField.GetActiveFigure();
+        }
+
+        private void RunGame( TaskScheduler taskScheduler )
+        {
+            if ( Interlocked.Exchange( ref _isRunning, 1 ) == 1 ) return;
+            _semaphore.Wait();
+
+            if ( taskScheduler != null ) {
+                TaskScheduler = taskScheduler;
+            }
             _gameField.Clear();
             if ( !_gameField.TryAddFigure( _factory.GetNext() ) ) throw new InvalidOperationException("Cannot add a figure at the start of the game");
             _timer.Change( 0, _speed);
-        }
 
-        public async Task StartNewGameAsync()
-        {
-            if ( Interlocked.Exchange( ref _isRunning, 1 ) == 1 ) return;
-
-            await Task.Run( RunGame );
-            _gameObjectCollection[1] = _gameField.GetActiveFigure();
-        }
-
-        public void StartNewGame()
-        {
-            RunGame();
-            _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            _semaphore.Release();
         }
 
         private void OnTimer( object o )
@@ -114,9 +130,7 @@ namespace Tetris
 
         private async void MoveFigureDown()
         {
-
-            bool isLocked = false;
-            Monitor.Enter( _lock, ref isLocked );
+            _semaphore.Wait();
 
             var res = await Task.Run( () => {
 
@@ -143,7 +157,6 @@ namespace Tetris
                 return innerRes.ToArray();
             } );
 
-
             if (res[0] < -1)
             {
                 _gameObjectCollection[0] = _gameField.GetFigureStack();
@@ -161,7 +174,7 @@ namespace Tetris
                 GameOver();
             }
 
-            if ( isLocked ) Monitor.Exit( _lock );
+            _semaphore.Release();
         }
 
         public void SpeedDown()
@@ -175,64 +188,27 @@ namespace Tetris
             if (MIN_SPEED - _speed < SPEED_STEP) return;
             _speed += SPEED_STEP;
         }
-        public async Task MoveFigureLeftAsync()
+
+        public async Task< bool > MoveFigureAsync( Directions direction )
         {
-            bool isLocked = false;
-            Monitor.Enter( _lock, ref isLocked);
-
-            var res = await Task.Run( () => _gameField.TryMove( new Vector( -1.0, 0.0 ) ) );
-
-            if ( res ) {
-                _gameObjectCollection[ 1 ] = _gameField.GetActiveFigure();
-            }
-
-            if ( isLocked ) Monitor.Exit( _lock );
+            return await Task.Run( () => {
+                _semaphore.Wait();
+                var res = _gameField.TryMove( DirectionVectors.FromDirection( direction ) );
+                _semaphore.Release();
+                return res;
+            } );
         }
 
-        public async Task MoveFigureRightAsync()
+        public async Task<bool> RotateFigureAsync( RotateDirections rotateDirections )
         {
-            bool isLocked = false;
-            Monitor.Enter(_lock, ref isLocked);
-
-            var res = await Task.Run(() => _gameField.TryMove(new Vector(1.0, 0.0) ) );
-
-            if (res)
-            {
-                _gameObjectCollection[1] = _gameField.GetActiveFigure();
-            }
-
-            if (isLocked) Monitor.Exit(_lock);
+            return await Task.Run(() => {
+                _semaphore.Wait();
+                var res = _gameField.TryRotateFigure( rotateDirections );
+                _semaphore.Release();
+                return res;
+            });
         }
 
-        public async Task RotateFigureClockwiseAsync()
-        {
-            bool isLocked = false;
-            Monitor.Enter(_lock, ref isLocked);
-
-            var res = await Task.Run(() => _gameField.TryRotateFigure( RotateDirections.Clockwise ) );
-
-            if (res)
-            {
-                _gameObjectCollection[1] = _gameField.GetActiveFigure();
-            }
-
-            if (isLocked) Monitor.Exit(_lock);
-        }
-
-        public async Task RotateFigureCounterclockwiseAsync()
-        {
-            bool isLocked = false;
-            Monitor.Enter(_lock, ref isLocked);
-
-            var res = await Task.Run(() => _gameField.TryRotateFigure(RotateDirections.Couterclockwise ) );
-
-            if (res)
-            {
-                _gameObjectCollection[1] = _gameField.GetActiveFigure();
-            }
-
-            if (isLocked) Monitor.Exit(_lock);
-        }
 
         public Task DropFigureAsync()
         {

@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Agbm.Wpf.MvvmBaseLibrary;
 using Tetris.Contracts;
+using Tetris.Models;
 
 namespace Tetris
 {
@@ -49,24 +50,36 @@ namespace Tetris
             }
         }
 
-        public ICommand StartGameCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.StartNewGameAsync(), 
-                                                                  o => !_tetrisEngine.IsRunning );
-        public ICommand MoveLeftCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.MoveFigureLeftAsync(), 
-                                                                 o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
-        public ICommand MoveRightCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.MoveFigureRightAsync(), 
-                                                                  o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
-        public ICommand RotateClockwiseCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.RotateFigureClockwiseAsync(), 
-                                                                        o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
-        public ICommand RotateCounterclockwiseCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.RotateFigureCounterclockwiseAsync(), 
-                                                                               o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+        public ICommand StartGameCommand => new MvvmAsyncCommand( StartGameAsync, o => !_tetrisEngine.IsRunning );
+        public ICommand MoveLeftCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( Directions.Left ), 
+                                                                 o => _tetrisEngine.CanManipulate );
+        public ICommand MoveRightCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( Directions.Right ), 
+                                                                  o => _tetrisEngine.CanManipulate);
+        public ICommand RotateClockwiseCommand => new MvvmAsyncCommand( async _ => await RotateFigureAsync( RotateDirections.Clockwise ), 
+                                                                        o => _tetrisEngine.CanManipulate);
+        public ICommand RotateCounterclockwiseCommand => new MvvmAsyncCommand( async _ => await RotateFigureAsync( RotateDirections.Couterclockwise ), 
+                                                                               o => _tetrisEngine.CanManipulate);
         public ICommand FallDownCommand => new MvvmAsyncCommand( async _ => await _tetrisEngine.DropFigureAsync(), 
-                                                                 o => _tetrisEngine.IsRunning && _tetrisEngine.HasActiveFigure );
+                                                                 o => _tetrisEngine.CanManipulate );
 
 
-        private async Task StartGame( object o )
+        private async Task StartGameAsync( object o )
         {
-            await _tetrisEngine.StartNewGameAsync();
+            await _tetrisEngine.StartNewGameAsync( TaskScheduler.FromCurrentSynchronizationContext() );
+            _tetrisEngine.UpdateField();
+            _tetrisEngine.UpdateFigure();
         }
 
+        private async Task MoveFigureAsync( Directions direction )
+        {
+            var canMove = await _tetrisEngine.MoveFigureAsync( direction );
+            if ( canMove )_tetrisEngine.UpdateFigure();
+        }
+
+        private async Task RotateFigureAsync( RotateDirections rotateDirection )
+        {
+            var canMove = await _tetrisEngine.RotateFigureAsync( rotateDirection );
+            if (canMove) _tetrisEngine.UpdateFigure();
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Tetris.Models;
 
 namespace Tetris.Contracts
 {
@@ -16,18 +17,20 @@ namespace Tetris.Contracts
         int GameFieldHeight { get; }
 
         bool IsRunning { get; }
-        bool HasActiveFigure { get; }
+        bool CanManipulate { get; }
 
         ReadOnlyObservableCollection<(Color?[][] data, int left, int top)> GameObjectCollection { get; }
-        Color?[][] GetGameField();
 
-        void StartNewGame();
-        Task StartNewGameAsync();
-        Task MoveFigureLeftAsync();
-        Task MoveFigureRightAsync();
+        Task StartNewGameAsync( TaskScheduler taskScheduler );
 
-        Task RotateFigureClockwiseAsync();
-        Task RotateFigureCounterclockwiseAsync();
+        void UpdateField();
+        void UpdateFigure();
+
+        Task<bool> MoveFigureAsync( Directions direction );
+
+
+        Task< bool > RotateFigureAsync( RotateDirections rotateDirections );
+
 
         Task DropFigureAsync();
     }
