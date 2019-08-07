@@ -28,7 +28,7 @@ namespace Tetris.Contracts
         void UpdateField();
         void UpdateFigure();
 
-        Task<bool> MoveFigureAsync( Directions direction );
+        Task<bool> MoveFigureAsync( MoveDirections moveDirection );
 
 
         Task< bool > RotateFigureAsync( RotateDirections rotateDirections );

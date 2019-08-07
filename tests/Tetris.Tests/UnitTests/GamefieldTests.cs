@@ -212,6 +212,64 @@ namespace Tetris.Tests.UnitTests
             Assert.That(gameField.ActiveFigureGizmo.Bottom, Is.EqualTo(bottom));
         }
 
+        [ Test ]
+        public void TryMove__CannotMoveFigureLeft_BecauseAnotherFigure__ReturnsFalse()
+        {
+            var gameField = GetGameField( 6, 4 );
+            gameField.TryAddFigure( new FigureGizmo( FigureFlyweightFactory.SquareFigure ) );
+            Assert.True(gameField.TryMove( DirectionVectors.DownVector ));
+            Assert.True(gameField.TryMove( DirectionVectors.DownVector ));
+            Assert.True(gameField.TryMove( DirectionVectors.LeftVector ));
+            Assert.True(gameField.TryMove( DirectionVectors.LeftVector ));
+            gameField.Merge();
+
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.SquareFigure));
+            Assert.True(gameField.TryMove(DirectionVectors.DownVector));
+
+            Assert.False( gameField.TryMove( DirectionVectors.LeftVector ) );
+        }
+
+        [Test]
+        public void TryMove__CannotMoveFigureLeft_BecauseLeftSide__ReturnsFalse()
+        {
+            var gameField = GetGameField(6, 4);
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.SquareFigure));
+
+            Assert.True(gameField.TryMove(DirectionVectors.LeftVector));
+            Assert.True(gameField.TryMove(DirectionVectors.LeftVector));
+
+            Assert.False(gameField.TryMove(DirectionVectors.LeftVector));
+        }
+
+        [Test]
+        public void TryMove__CannotMoveFigureRight_BecauseAnotherFigure__ReturnsFalse()
+        {
+            var gameField = GetGameField(6, 4);
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.SquareFigure));
+            Assert.True(gameField.TryMove(DirectionVectors.DownVector));
+            Assert.True(gameField.TryMove(DirectionVectors.DownVector));
+            Assert.True(gameField.TryMove(DirectionVectors.RightVector));
+            Assert.True(gameField.TryMove(DirectionVectors.RightVector));
+            gameField.Merge();
+
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.SquareFigure));
+            Assert.True(gameField.TryMove(DirectionVectors.DownVector));
+
+            Assert.False(gameField.TryMove(DirectionVectors.RightVector));
+        }
+
+        [Test]
+        public void TryMove__CannotMoveFigureRight_BecauseRightSide__ReturnsFalse()
+        {
+            var gameField = GetGameField(6, 4);
+            gameField.TryAddFigure(new FigureGizmo(FigureFlyweightFactory.SquareFigure));
+
+            Assert.True(gameField.TryMove(DirectionVectors.RightVector));
+            Assert.True(gameField.TryMove(DirectionVectors.RightVector));
+
+            Assert.False(gameField.TryMove(DirectionVectors.RightVector));
+        }
+
         #endregion
 
 

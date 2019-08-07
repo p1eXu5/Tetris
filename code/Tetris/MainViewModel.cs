@@ -51,9 +51,9 @@ namespace Tetris
         }
 
         public ICommand StartGameCommand => new MvvmAsyncCommand( StartGameAsync, o => !_tetrisEngine.IsRunning );
-        public ICommand MoveLeftCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( Directions.Left ), 
+        public ICommand MoveLeftCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( MoveDirections.Left ), 
                                                                  o => _tetrisEngine.CanManipulate );
-        public ICommand MoveRightCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( Directions.Right ), 
+        public ICommand MoveRightCommand => new MvvmAsyncCommand( async _ => await MoveFigureAsync( MoveDirections.Right ), 
                                                                   o => _tetrisEngine.CanManipulate);
         public ICommand RotateClockwiseCommand => new MvvmAsyncCommand( async _ => await RotateFigureAsync( RotateDirections.Clockwise ), 
                                                                         o => _tetrisEngine.CanManipulate);
@@ -70,9 +70,9 @@ namespace Tetris
             _tetrisEngine.UpdateFigure();
         }
 
-        private async Task MoveFigureAsync( Directions direction )
+        private async Task MoveFigureAsync( MoveDirections moveDirection )
         {
-            var canMove = await _tetrisEngine.MoveFigureAsync( direction );
+            var canMove = await _tetrisEngine.MoveFigureAsync( moveDirection );
             if ( canMove )_tetrisEngine.UpdateFigure();
         }
 

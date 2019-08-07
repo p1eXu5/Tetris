@@ -46,6 +46,8 @@ namespace Tetris.Models
         public int Height { get; }
         public IFigureGizmo ActiveFigureGizmo => _activeFigureGizmoProxy.Image;
 
+        protected virtual List< Color?[] > Field => _field;
+
         #endregion
 
 
@@ -144,10 +146,10 @@ namespace Tetris.Models
 
                 for (int j = ActiveFigureGizmo.Left, jj = 0; j < ActiveFigureGizmo.Right; ++j, ++jj)
                 {
-                    var i = ActiveFigureGizmo.Height - 1;
-                    while (i >= 0 && !ActiveFigureGizmo[i, jj].HasValue) { --i; }
-                    if (i < 0) continue;
-                    if (_field[ActiveFigureGizmo.Top + i + (int)vector.Y][j].HasValue) return false;
+                    var ii = ActiveFigureGizmo.Height - 1;
+                    while (ii >= 0 && !ActiveFigureGizmo[ii, jj].HasValue) { --ii; }
+                    if (ii < 0) continue;
+                    if (Field[ActiveFigureGizmo.Top + ii + (int)vector.Y][j].HasValue) return false;
                 }
             }
             else if (vector.Y < 0)
@@ -156,10 +158,10 @@ namespace Tetris.Models
 
                 for (int j = ActiveFigureGizmo.Left, jj = 0; j < ActiveFigureGizmo.Right; ++j, ++jj)
                 {
-                    var i = 0;
-                    while (i < ActiveFigureGizmo.Height && !ActiveFigureGizmo[i, jj].HasValue) { ++i; }
-                    if (i >= ActiveFigureGizmo.Height) continue;
-                    if (_field[ActiveFigureGizmo.Bottom - 1 - i + (int)vector.Y][j].HasValue) return false;
+                    var ii = 0;
+                    while (ii < ActiveFigureGizmo.Height && !ActiveFigureGizmo[ii, jj].HasValue) { ++ii; }
+                    if (ii >= ActiveFigureGizmo.Height) continue;
+                    if (Field[ActiveFigureGizmo.Top + ii + (int)vector.Y][j].HasValue) return false;
                 }
             }
             else if (vector.X > 0)
@@ -168,10 +170,10 @@ namespace Tetris.Models
 
                 for (int i = ActiveFigureGizmo.Top, ii = 0; i < ActiveFigureGizmo.Bottom; ++i, ++ii)
                 {
-                    var j = ActiveFigureGizmo.Width - 1;
-                    while (j >= 0 && !ActiveFigureGizmo[ii, j].HasValue) { --j; }
-                    if (j < 0) continue;
-                    if (_field[i][ActiveFigureGizmo.Left + j + (int)vector.X].HasValue) return false;
+                    var jj = ActiveFigureGizmo.Width - 1;
+                    while (jj >= 0 && !ActiveFigureGizmo[ii, jj].HasValue) { --jj; }
+                    if (jj < 0) continue;
+                    if (Field[i][ActiveFigureGizmo.Left + jj + (int)vector.X].HasValue) return false;
                 }
             }
             else if (vector.X < 0)
@@ -180,10 +182,10 @@ namespace Tetris.Models
 
                 for (int i = ActiveFigureGizmo.Top, ii = 0; i < ActiveFigureGizmo.Bottom; ++i, ++ii)
                 {
-                    var j = 0;
-                    while (j < ActiveFigureGizmo.Width && !ActiveFigureGizmo[ii, j].HasValue) { ++j; }
-                    if (j >= ActiveFigureGizmo.Width) continue;
-                    if (_field[i][ActiveFigureGizmo.Right - 1 - j + (int)vector.X].HasValue) return false;
+                    var jj = 0;
+                    while (jj < ActiveFigureGizmo.Width && !ActiveFigureGizmo[ii, jj].HasValue) { ++jj; }
+                    if (jj >= ActiveFigureGizmo.Width) continue;
+                    if (Field[i][ActiveFigureGizmo.Left + jj + (int)vector.X].HasValue) return false;
                 }
             }
 

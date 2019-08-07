@@ -83,7 +83,7 @@
     <Compile Include="Contracts\ITetrisEngine.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
     <Compile Include="Models\Contracts\IVectorSpinner.cs" />
-    <Compile Include="Models\Directions.cs" />
+    <Compile Include="Models\MoveDirections.cs" />
     <Compile Include="Models\FigureGizmo.cs" />
     <Compile Include="Models\FigureGizmoBase.cs" />
     <Compile Include="Models\FigureGizmoEnumerator.cs" />

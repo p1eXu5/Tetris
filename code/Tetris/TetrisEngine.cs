@@ -97,12 +97,16 @@ namespace Tetris
 
         public void UpdateField()
         {
+            _semaphore.Wait();
             _gameObjectCollection[0] = _gameField.GetFigureStack();
+            _semaphore.Release();
         }
 
         public void UpdateFigure()
         {
+            _semaphore.Wait();
             _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            _semaphore.Release();
         }
 
         private void RunGame( TaskScheduler taskScheduler )
@@ -120,75 +124,81 @@ namespace Tetris
             _semaphore.Release();
         }
 
-        private void OnTimer( object o )
+        private async void OnTimer( object o )
         {
             if (Interlocked.Exchange( ref _timerInvoked, 1 ) != 0 ) return;
 
-            var t = new Task( MoveFigureDown );
-            t.RunSynchronously( TaskScheduler );
-            t.Wait();
+            await Task.Run( MoveFigureDown ).ContinueWith( task => 
+            {
+                var res = task.Result;
 
-            
+                UpdateFigure();
+
+                if (res[0] < -1) {
+                    UpdateField();
+                }
+
+                if (res.Length > 1) {
+                    RemovableLinesFormed?.Invoke(this, res.Skip(1).ToArray() );
+                }
+
+                if (res[0] == -4) {
+                    GameOver();
+                }
+            }, TaskScheduler );
 
             Volatile.Write( ref _timerInvoked, 0 );
         }
 
-        private async void MoveFigureDown()
+        /// <summary>
+        ///     Move the figure down.
+        /// </summary>
+        /// <returns>
+        ///     [-1] if the dropping is continuing;
+        ///     [-2] if figure has been merged;
+        ///     [-3, removable_lines] if there are removable lines;
+        ///     [-4] if can't add a new figure.
+        /// </returns>
+        private int[] MoveFigureDown()
         {
+            _semaphore.Wait();
 
-            var res = await Task.Run( () => {
-                
-                _semaphore.Wait();
+            var innerRes = new List<int> { -1 };
 
-                var innerRes = new List< int > { -1 };
-
-                if ( _gameField.TryMove( _gravityVector ) ) {
-                    _semaphore.Release();
-                    return new[] {-1 };
-                }
-
-                if (_isDropping)
-                {
-                    _timer.Change(0, _speed);
-                    _isDropping = false;
-                }
-
-                _gameField.Merge();
-                innerRes[0] = -2;
-                    
-                var removedLines = _gameField.RemoveFilledLines();
-                
-                if ( removedLines.Any() ) {
-                    innerRes[0] = -3;
-                    foreach ( var t in removedLines ) { innerRes.Add( t ); }
-                }
-
-                if ( !_gameField.TryAddFigure( _factory.GetNext() ) ) {
-                    innerRes[0] = -4;
-                }
-
+            if (_gameField.TryMove( DirectionVectors.DownVector )) 
+            {
+                // the dropping continues 
                 _semaphore.Release();
-                return innerRes.ToArray();
-            } );
-
-            if (res[0] < -1)
-            {
-                _gameObjectCollection[0] = _gameField.GetFigureStack();
+                return new[] { -1 };
             }
 
-            if (res.Length > 1)
+            // The figure has been dropped
+            if (_isDropping)
             {
-                RemovableLinesFormed?.Invoke(this, res.Skip(1).ToArray());
+                _timer.Change(0, _speed);
+                _isDropping = false;
             }
 
-            _gameObjectCollection[1] = _gameField.GetActiveFigure();
+            _gameField.Merge();
+            innerRes[0] = -2;
 
-            if (res[0] == -4)
+            var removedLines = _gameField.RemoveFilledLines();
+
+            if (removedLines.Any())
             {
-                GameOver();
+                innerRes[0] = -3;
+                foreach (var t in removedLines) { innerRes.Add(t); }
             }
 
+            if (!_gameField.TryAddFigure(_factory.GetNext()))
+            {
+                innerRes[0] = -4;
+            }
+
+            _semaphore.Release();
+            return innerRes.ToArray();
         }
+
 
         public void SpeedDown()
         {
@@ -202,17 +212,17 @@ namespace Tetris
             _speed += SPEED_STEP;
         }
 
-        public async Task< bool > MoveFigureAsync( Directions direction )
+        public async Task< bool > MoveFigureAsync( MoveDirections moveDirection )
         {
             return await Task.Run( () => {
                 _semaphore.Wait();
-                var res = _gameField.TryMove( DirectionVectors.FromDirection( direction ) );
+                var res = _gameField.TryMove( DirectionVectors.FromDirection( moveDirection ) );
                 _semaphore.Release();
                 return res;
             } );
         }
 
-        public async Task<bool> RotateFigureAsync( RotateDirections rotateDirections )
+        public async Task< bool > RotateFigureAsync( RotateDirections rotateDirections )
         {
             return await Task.Run(() => {
                 _semaphore.Wait();
