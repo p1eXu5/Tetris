@@ -80,24 +80,26 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Components\TetrisCanvas.cs" />
-    <Compile Include="Contracts\ITetrisEngine.cs" />
+    <Compile Include="Engine\Contracts\IScoreAgent.cs" />
+    <Compile Include="Engine\Contracts\ITetrisEngine.cs" />
+    <Compile Include="Engine\ScoreAgent.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
-    <Compile Include="Models\Contracts\IVectorSpinner.cs" />
+    <Compile Include="Engine\Contracts\IVectorSpinner.cs" />
     <Compile Include="Models\MoveDirections.cs" />
     <Compile Include="Models\FigureGizmo.cs" />
     <Compile Include="Models\FigureGizmoBase.cs" />
     <Compile Include="Models\FigureGizmoEnumerator.cs" />
-    <Compile Include="Models\GameField.cs" />
+    <Compile Include="Engine\GameField.cs" />
     <Compile Include="Models\FigureGizmoProxy.cs" />
     <Compile Include="Models\Contracts\IDrawData.cs" />
-    <Compile Include="Models\Contracts\IFigureFlyweightFactory.cs" />
+    <Compile Include="Engine\Contracts\IFigureFlyweightFactory.cs" />
     <Compile Include="Models\Contracts\IFigureGizmo.cs" />
     <Compile Include="Models\Contracts\IFigureGizmoProxy.cs" />
-    <Compile Include="Models\Contracts\IGameField.cs" />
+    <Compile Include="Engine\Contracts\IGameField.cs" />
     <Compile Include="Models\Contracts\ILiveFigureGizmo.cs" />
     <Compile Include="Models\RotateDirections.cs" />
-    <Compile Include="Models\VectorSpinner.cs" />
-    <Compile Include="TetrisEngine.cs" />
+    <Compile Include="Engine\VectorSpinner.cs" />
+    <Compile Include="Engine\TetrisEngine.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -114,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Figure.cs" />
-    <Compile Include="Models\FigureFlyweightFactory.cs" />
+    <Compile Include="Engine\FigureFlyweightFactory.cs" />
     <Compile Include="Models\Contracts\IFigure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

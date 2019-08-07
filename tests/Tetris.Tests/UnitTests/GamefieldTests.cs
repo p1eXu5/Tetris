@@ -3,6 +3,8 @@ using System.Windows.Media;
 using System.Windows;
 using Moq;
 using NUnit.Framework;
+using Tetris.Engine;
+using Tetris.Engine.Contracts;
 using Tetris.Models;
 using Tetris.Models.Contracts;
 using Tetris.Tests.UnitTests.TestCases;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Tetris.Models;
 
-namespace Tetris.Contracts
+namespace Tetris.Engine.Contracts
 {
     public interface ITetrisEngine: IDisposable
     {

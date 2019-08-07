@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Tetris.Models;
 using System.Windows.Media;
+using Tetris.Engine;
 
 namespace Tetris.Tests.UnitTests.TestCases
 {

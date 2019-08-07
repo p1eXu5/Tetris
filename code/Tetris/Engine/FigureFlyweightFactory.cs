@@ -6,12 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Tetris.Engine.Contracts;
+using Tetris.Models;
 using Tetris.Models.Contracts;
 
-namespace Tetris.Models
+namespace Tetris.Engine
 {
     public class FigureFlyweightFactory : IDisposable, IFigureFlyweightFactory
     {
+        public const byte MAX_HEIGHT = 4;
+
         private readonly RandomNumberGenerator _random = RandomNumberGenerator.Create();
         private static IFigure _squareFigure;
         private static IFigure _lineFigure;

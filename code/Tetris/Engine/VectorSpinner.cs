@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using Tetris.Engine.Contracts;
 using Tetris.Models.Contracts;
 
-namespace Tetris.Models
+namespace Tetris.Engine
 {
     public class VectorSpinner : IVectorSpinner
     {

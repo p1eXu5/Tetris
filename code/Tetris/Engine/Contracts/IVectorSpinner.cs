@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Tetris.Models.Contracts
+namespace Tetris.Engine.Contracts
 {
     public interface IVectorSpinner
     {

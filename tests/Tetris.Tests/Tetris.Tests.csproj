@@ -67,6 +67,7 @@
     <Compile Include="UnitTests\FigureGizmoTests.cs" />
     <Compile Include="UnitTests\GameFieldTests.cs" />
     <Compile Include="UnitTests\DirectionVectorsTests.cs" />
+    <Compile Include="UnitTests\ScoreAgentTests.cs" />
     <Compile Include="UnitTests\TestCases\GameFieldTestCases.cs" />
     <Compile Include="UnitTests\TestCases\VectorSpinnerTestCases.cs" />
     <Compile Include="UnitTests\VectorSpinnerTests.cs" />

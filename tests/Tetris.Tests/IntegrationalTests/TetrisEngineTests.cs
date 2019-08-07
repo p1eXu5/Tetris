@@ -8,7 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Tetris.Contracts;
+using Tetris.Engine;
+using Tetris.Engine.Contracts;
 using Tetris.Models;
 
 namespace Tetris.Tests.IntegrationalTests

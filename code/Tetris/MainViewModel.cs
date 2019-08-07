@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using Agbm.Wpf.MvvmBaseLibrary;
-using Tetris.Contracts;
+using Tetris.Engine.Contracts;
 using Tetris.Models;
 
 namespace Tetris

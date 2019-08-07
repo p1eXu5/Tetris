@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Tetris.Models;
+using Tetris.Models.Contracts;
 
-namespace Tetris.Models.Contracts
+namespace Tetris.Engine.Contracts
 {
     public interface IGameField
     {

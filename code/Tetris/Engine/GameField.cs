@@ -5,10 +5,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
+using Tetris.Engine.Contracts;
 using Tetris.Helpers;
+using Tetris.Models;
 using Tetris.Models.Contracts;
 
-namespace Tetris.Models
+namespace Tetris.Engine
 {
     public class GameField : IGameField
     {
