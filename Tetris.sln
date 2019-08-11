@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.MvvmBaseLibrary", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tetris.Tests", "tests\Tetris.Tests\Tetris.Tests.csproj", "{0E20B956-1615-4D92-940B-392EDB46D97E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.CustomControls", "externals\Agbm.Wpf\Code\Agbm.Wpf.CustomControls\Agbm.Wpf.CustomControls.csproj", "{240F5CE1-E550-4702-A577-825244A750CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{0E20B956-1615-4D92-940B-392EDB46D97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E20B956-1615-4D92-940B-392EDB46D97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E20B956-1615-4D92-940B-392EDB46D97E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{240F5CE1-E550-4702-A577-825244A750CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{240F5CE1-E550-4702-A577-825244A750CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{240F5CE1-E550-4702-A577-825244A750CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{240F5CE1-E550-4702-A577-825244A750CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{D596566F-96DA-4E88-AB29-EEEFCB1BB994} = {2140835F-3C9B-4418-9D84-E4BBBF3DD63D}
 		{C92FF512-B9C0-4AAF-9A9B-D0DEE139AF44} = {2140835F-3C9B-4418-9D84-E4BBBF3DD63D}
 		{0E20B956-1615-4D92-940B-392EDB46D97E} = {53B8DAB2-D244-4425-81F2-11F5C72A0C23}
+		{240F5CE1-E550-4702-A577-825244A750CF} = {2140835F-3C9B-4418-9D84-E4BBBF3DD63D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C48665F-57F6-40E8-9186-377250E9A364}
